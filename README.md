@@ -1,6 +1,6 @@
 # BookNest
 ## Descrizione del Progetto
-è una piattaforma web progettata per offrire la possibilità di leggere libri online. Il sito permette agli utenti non solo di leggere i propri titoli preferiti, ma anche di organizzare la propria libreria digitale in modo personalizzato.
+è una piattaforma web progettata per offrire la possibilità di leggere libri online oppure scaricarli. Il sito permette agli utenti non solo di leggere i propri titoli preferiti, ma anche di organizzare la propria libreria digitale in modo personalizzato.
 # Caratteristiche Principali
 + **Gestione Account**: Sistema di autenticazione sicuro per permettere agli utenti di creare un profilo personale e sincronizzare i propri progressi
 + **Libreria Personale & Collezioni**: Possibilità di organizzare i libri in collezioni personalizzate (es. "Da leggere", "Preferiti", "Classici") per una gestione ottimale dei contenuti

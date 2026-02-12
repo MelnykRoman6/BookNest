@@ -12,4 +12,5 @@
 <img width="687" height="691" alt="CasiUsoBookNest" src="https://github.com/user-attachments/assets/d491b90b-4757-4ed5-8409-0800f5fb6c08" />
 
 ## Schema entità-relazionale
-<img width="668" height="813" alt="BookNest drawio" src="https://github.com/user-attachments/assets/73a6d251-2794-4c26-9c11-d3b5101d1647" />
+<img width="812" height="813" alt="BookNest drawio" src="https://github.com/user-attachments/assets/33661da9-e91c-4dd5-844b-872c86f58846" />
+

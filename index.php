@@ -1,5 +1,11 @@
 <?php
 session_start();
+require_once 'db.php';
+if (isset($pdo)) {
+    //echo "Connessione OK";
+} else {
+    die("Errore: la variabile \$pdo non è definita in db.php");
+}
 echo "<div style='position: fixed; top: 10px; right: 20px; z-index: 1000; display: flex; gap: 10px;'>";
 
 if (isset($_SESSION['user_id'])) {
@@ -31,6 +37,11 @@ echo "<form method='GET' action=''>
 echo "<br><hr><br>";
 
 $query = isset($_GET['search']) ? trim($_GET['search']) : "";
+if (isset($_SESSION['user_id']) and $query != "") {
+    $stmt = $pdo->prepare("insert into cronologia (id_utente, criterio_ricerca, filtro_genere, filtro_autore, data_ricerca) VALUES (?, ?, ?, ?, NOW())");
+    $stmt->execute([$_SESSION['user_id'], $query, $query, $query]);
+    $user = $stmt->fetch();
+}
 
 if ($query !== "") {
     $url = "https://openlibrary.org/search.json?q=" . urlencode($query) . "&limit=10";

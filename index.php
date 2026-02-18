@@ -1,5 +1,24 @@
 <?php
-// Интерфейс поиска
+session_start();
+echo "<div style='position: fixed; top: 10px; right: 20px; z-index: 1000; display: flex; gap: 10px;'>";
+
+if (isset($_SESSION['user_id'])) {
+    echo "";
+    echo "<a href='profilo.php' style='text-decoration: none;'>
+            <button style='padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;'>Profilo</button>
+          </a>";
+    echo "<a href='logout.php' style='text-decoration: none;'>
+            <button style='padding: 8px 15px; background-color: darkred; color: white; border: none; border-radius: 4px; cursor: pointer;'>Logout</button>
+          </a>";
+} else {
+    echo "<a href='login.php' style='text-decoration: none;'>
+            <button style='padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;'>Accedi</button>
+          </a>";
+    echo "<a href='register.php' style='text-decoration: none;'>
+            <button style='padding: 8px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;'>Registrati</button>
+          </a>";
+}
+echo "</div>";
 echo "<h2>Libreria Digitale PDF (Open Library)</h2>";
 echo "<form method='GET' action=''>
         <input type='text' name='search' placeholder='Cerca un libro in PDF...' 

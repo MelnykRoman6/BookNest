@@ -54,14 +54,38 @@ if (isset($_POST['register'])) {
         $email = $_SESSION['temp_email'];
 
         try {
-            $sql = "INSERT INTO utente (email, password_hash, is_verified, data_reg) VALUES (?, ?, 1, NOW())";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([$email, $password_hash]);
+            $pdo->beginTransaction();
 
-            unset($_SESSION['temp_code']); // Очищаем временные данные
+            $sqlUser = "INSERT INTO utente (email, password_hash, is_verified, data_reg) VALUES (?, ?, 1, NOW())";
+            $stmtUser = $pdo->prepare($sqlUser);
+            $stmtUser->execute([$email, $password_hash]);
+
+            $new_user_id = $pdo->lastInsertId();
+
+            $base_collections = [
+                'Sto leggendo',
+                'Letto',
+                'Voglio leggere',
+                'Preferiti'
+            ];
+
+            $sqlCol = "INSERT INTO collezione (id_utente, nome, data_crea) VALUES (?, ?, NOW())";
+            $stmtCol = $pdo->prepare($sqlCol);
+
+            foreach ($base_collections as $col_name) {
+                $stmtCol->execute([$new_user_id, $col_name]);
+            }
+
+            $pdo->commit();
+
+            unset($_SESSION['temp_code']);
+            unset($_SESSION['temp_email']);
             header("Location: login.php?success=1");
+            exit;
+
         } catch (PDOException $e) {
-            $error = "Errore durante la registrazione (forse email già usata).";
+            $pdo->rollBack();
+            $error = "Errore durante la registrazione: " . $e->getMessage();
         }
     } else {
         $error = "Codice errato!";

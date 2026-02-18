@@ -25,9 +25,9 @@ if (isset($_SESSION['user_id'])) {
           </a>";
 }
 echo "</div>";
-echo "<h2>Libreria Digitale PDF (Open Library)</h2>";
+echo "<h2>BookNest</h2>";
 echo "<form method='GET' action=''>
-        <input type='text' name='search' placeholder='Cerca un libro in PDF...' 
+        <input type='text' name='search' placeholder='Cerca...' 
                value='" . htmlspecialchars($_GET['search'] ?? '') . "' 
                style='padding: 10px; width: 300px; border: 1px solid #ccc; border-radius: 4px;'>
         <button type='submit' style='padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;'>

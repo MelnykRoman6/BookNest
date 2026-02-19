@@ -9,8 +9,10 @@
     
 ## Documentazione
 ## Schema dei casi d'uso
-<img width="687" height="691" alt="CasiUsoBookNest" src="https://github.com/user-attachments/assets/d491b90b-4757-4ed5-8409-0800f5fb6c08" />
+![WhatsApp Image 2026-02-13 at 16 52 02](https://github.com/user-attachments/assets/28bbfa4c-99c6-4e5e-b58a-bda742f778a1)
+
 
 ## Schema entità-relazionale
-<img width="812" height="813" alt="BookNest drawio" src="https://github.com/user-attachments/assets/33661da9-e91c-4dd5-844b-872c86f58846" />
+![WhatsApp Image 2026-02-13 at 16 52 01](https://github.com/user-attachments/assets/a979bfea-8299-409e-ba13-e9da092957e6)
+
 

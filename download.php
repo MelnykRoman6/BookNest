@@ -14,11 +14,10 @@ if (isset($_GET['file_url'])) {
 
     $context = stream_context_create($options);
 
-    // Пытаемся получить содержимое
     $content = @file_get_contents($url, false, $context);
 
     if ($content !== false) {
-        // Устанавливаем заголовки для PDF
+
         header('Content-Type: application/pdf');
         header('Content-Disposition: attachment; filename="' . $fileName . '"');
         header('Content-Length: ' . strlen($content));
@@ -26,7 +25,6 @@ if (isset($_GET['file_url'])) {
         echo $content;
         exit;
     } else {
-        // Если файл не найден (404), выводим ошибку
         echo "<script>alert('Spiacenti, il file PDF non è disponibile per questo specifico volume.'); window.location.href='index.php';</script>";
     }
 }

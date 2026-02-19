@@ -19,11 +19,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_email'] = $user['email'];
 
-        // Перенаправляем на главную
         header("Location: index.php");
         exit;
     } else {
-        $error = "Email или Password неверны!";
+        $error = "Email o password sbagliati!";
     }
 }
 ?>

@@ -1,3 +1,5 @@
+//db
+
 <?php
 $host = 'localhost';
 $db   = 'booknest';

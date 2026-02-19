@@ -14,7 +14,7 @@ require 'includes/PHPMailer/SMTP.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-
+//verifica mail
 if (isset($_POST['send_code'])) {
     $email = $_POST['email'];
     $code = rand(100000, 999999);
@@ -68,7 +68,7 @@ if (isset($_POST['register'])) {
                 'Voglio leggere',
                 'Preferiti'
             ];
-
+            //creazione delle collezioni
             $sqlCol = "INSERT INTO collezione (id_utente, nome, data_crea) VALUES (?, ?, NOW())";
             $stmtCol = $pdo->prepare($sqlCol);
 

@@ -16,7 +16,7 @@ if (empty($fileUrl)) {
             margin: 0;
             padding: 0;
             height: 100%;
-            overflow: hidden; /* Убираем двойную прокрутку */
+            overflow: hidden;
             background-color: #333;
             font-family: Arial, sans-serif;
         }
@@ -36,7 +36,6 @@ if (empty($fileUrl)) {
         }
         .header a:hover { color: white; }
 
-        /* Контейнер для PDF во весь экран */
         .pdf-container {
             height: calc(100% - 50px);
             width: 100%;

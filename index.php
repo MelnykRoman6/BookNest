@@ -8,6 +8,7 @@ if (isset($pdo)) {
 }
 echo "<div style='position: fixed; top: 10px; right: 20px; z-index: 1000; display: flex; gap: 10px;'>";
 
+//se nella sessione c'è uid(registrato) mostra i pulsanti di profilo e di logout
 if (isset($_SESSION['user_id'])) {
     echo "";
     echo "<a href='profilo.php' style='text-decoration: none;'>
@@ -16,7 +17,10 @@ if (isset($_SESSION['user_id'])) {
     echo "<a href='logout.php' style='text-decoration: none;'>
             <button style='padding: 8px 15px; background-color: darkred; color: white; border: none; border-radius: 4px; cursor: pointer;'>Logout</button>
           </a>";
-} else {
+
+}
+//se non lo è mostra i pulsanti di login o registrazione
+else {
     echo "<a href='login.php' style='text-decoration: none;'>
             <button style='padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;'>Accedi</button>
           </a>";
@@ -36,7 +40,10 @@ echo "<form method='GET' action=''>
       </form>";
 echo "<br><hr><br>";
 
+//prende il testo da searchbar
 $query = isset($_GET['search']) ? trim($_GET['search']) : "";
+
+//se l'utente è registrato aggiunge nella cronologia
 if (isset($_SESSION['user_id']) and $query != "") {
     $stmt = $pdo->prepare("insert into cronologia (id_utente, criterio_ricerca, filtro_genere, filtro_autore, data_ricerca) VALUES (?, ?, ?, ?, NOW())");
     $stmt->execute([$_SESSION['user_id'], $query, $query, $query]);
@@ -44,6 +51,7 @@ if (isset($_SESSION['user_id']) and $query != "") {
 }
 
 if ($query !== "") {
+    //richiesta api
     $url = "https://openlibrary.org/search.json?q=" . urlencode($query) . "&limit=10";
 
     $ch = curl_init();
@@ -53,6 +61,7 @@ if ($query !== "") {
     $response = curl_exec($ch);
     $data = json_decode($response, true);
 
+    //se ritorna qualcosa stampa informazioni ricevuti
     if (!empty($data['docs'])) {
         foreach ($data['docs'] as $book) {
 

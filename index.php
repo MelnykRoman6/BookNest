@@ -69,36 +69,26 @@ if ($query !== "") {
 
             if (!$iaId) continue;
 
+            $bookKey = str_replace('/works/', '', $book['key']);
+
             echo "<div style='border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 8px; display: flex; align-items: flex-start; gap: 20px;'>";
 
+            echo "<a href='libro.php?id=$bookKey' style='text-decoration:none; color:inherit;'>";
             $coverId = $book['cover_i'] ?? null;
             $image = $coverId ? "https://covers.openlibrary.org/b/id/{$coverId}-M.jpg" : "https://via.placeholder.com/100x150?text=No+Cover";
-            echo "<img src='$image' alt='Cover' style='width: 100px;'>";
+            echo "<img src='$image' alt='Cover' style='width: 100px; cursor:pointer;'>";
+            echo "</a>";
 
             echo "<div>";
-            echo "<strong style='font-size: 1.2em;'>" . htmlspecialchars($book['title']) . "</strong><br>";
+            echo "<a href='libro.php?id=$bookKey' style='text-decoration:none; color:inherit;'>";
+            echo "<strong style='font-size: 1.2em; cursor:pointer;'>" . htmlspecialchars($book['title']) . "</strong>";
+            echo "</a><br>";
+
             echo "Autore: " . ($book['author_name'][0] ?? 'Sconosciuto') . "<br><br>";
 
+            echo "</div>";
+            echo "</div>";
 
-
-            if ($iaId) {
-                $pdfUrl = "https://archive.org/download/{$iaId}/{$iaId}.pdf";
-                $encodedUrl = urlencode($pdfUrl);
-                $encodedTitle = urlencode($book['title']);
-
-                echo "<div style='display: flex; gap: 10px; margin-top: 10px;'>";
-
-                $downloadParams = http_build_query(['file_url' => $pdfUrl, 'file_name' => $book['title']]);
-                echo "<a href='download.php?$downloadParams'>
-            <button style='padding: 8px 12px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;'>Scarica PDF</button>
-          </a>";
-
-                echo "<a href='reader.php?file=$encodedUrl&title=$encodedTitle' target='_blank'>
-            <button style='padding: 8px 12px; background-color: #17a2b8; color: white; border: none; border-radius: 4px; cursor: pointer;'>Leggi Online</button>
-          </a>";
-
-                echo "</div>";
-            }
             echo "</div>";
             echo "</div>";
         }

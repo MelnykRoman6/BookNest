@@ -25,6 +25,7 @@ if (isset($_GET['file_url'])) {
         echo $content;
         exit;
     } else {
-        echo "<script>alert('Spiacenti, il file PDF non è disponibile per questo specifico volume.'); window.location.href='index.php';</script>";
+        echo "<script>alert('Spiacenti, il file PDF non è disponibile per questo specifico volume.'); 
+              window.location.href='index.php';</script>";
     }
 }

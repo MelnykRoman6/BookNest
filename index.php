@@ -66,21 +66,20 @@ if ($query !== "") {
         foreach ($data['docs'] as $book) {
 
             $iaId = $book['ia'][0] ?? null;
-
             if (!$iaId) continue;
 
             $bookKey = str_replace('/works/', '', $book['key']);
 
             echo "<div style='border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 8px; display: flex; align-items: flex-start; gap: 20px;'>";
 
-            echo "<a href='libro.php?id=$bookKey' style='text-decoration:none; color:inherit;'>";
+            echo "<a href='libro.php?id=$bookKey&ia=$iaId' style='text-decoration:none; color:inherit;'>";
             $coverId = $book['cover_i'] ?? null;
             $image = $coverId ? "https://covers.openlibrary.org/b/id/{$coverId}-M.jpg" : "https://via.placeholder.com/100x150?text=No+Cover";
             echo "<img src='$image' alt='Cover' style='width: 100px; cursor:pointer;'>";
             echo "</a>";
 
             echo "<div>";
-            echo "<a href='libro.php?id=$bookKey' style='text-decoration:none; color:inherit;'>";
+            echo "<a href='libro.php?id=$bookKey&ia=$iaId' style='text-decoration:none; color:inherit;'>";
             echo "<strong style='font-size: 1.2em; cursor:pointer;'>" . htmlspecialchars($book['title']) . "</strong>";
             echo "</a><br>";
 

@@ -23,10 +23,10 @@ if (isset($book['description'])) {
     $description = is_array($book['description']) ? $book['description']['value'] : $book['description'];
 }
 if (isset($_SESSION['user_id'])) {
-    $stmt = $pdo->prepare("select c.nome from utente u inner join collezione c on u.id = c.id_utente where u.id = ?");
+    $stmt = $pdo->prepare("select c.nome, c.id from utente u inner join collezione c on u.id = c.id_utente 
+                                    where u.id = ?");
     $stmt->execute([$_SESSION['user_id']]);
-    $collezioni = $stmt->fetch();
-
+    $collezioni = $stmt->fetchAll();
 }
 ?>
 
@@ -75,12 +75,12 @@ if (isset($_SESSION['user_id'])) {
             <form action="save_to_collection.php" method="POST">
                 <input type="hidden" name="book_id" value="<?php echo $bookId; ?>">
                 <label>Aggiungi a una collezione:</label><br>
-                <?php
-                for ($i = 0; $i < count($collezioni); $i++) {
-                    echo count($collezioni);
-                }
-                ?>
-                <select name="collection_id" style="padding: 10px; width: 200px; margin-top: 10px;">
+                <select name="collection_id">
+                    <?php foreach ($collezioni as $col): ?>
+                        <option value="<?php echo $col['id']; ?>">
+                            <?php echo htmlspecialchars($col['nome']); ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
                 <button type="submit" style="padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor:pointer;">Salva</button>
             </form>

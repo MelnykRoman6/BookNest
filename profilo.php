@@ -75,7 +75,7 @@ try {
     <div class="section">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h3>Le Mie Collezioni</h3>
-            <a href="create_collection.php" class="btn-create">+ Nuova Collezione</a>
+            <a href="nuova_col.php" class="btn-create">+ Nuova Collezione</a>
         </div>
 
         <?php if ($collezioni): ?>

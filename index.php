@@ -1,98 +1,235 @@
 <?php
 session_start();
 require_once 'db.php';
-if (isset($pdo)) {
-    //echo "Connessione OK";
-} else {
+
+if (!isset($pdo)) {
     die("Errore: la variabile \$pdo non è definita in db.php");
 }
-echo "<div style='position: fixed; top: 10px; right: 20px; z-index: 1000; display: flex; gap: 10px;'>";
+?>
 
-//se nella sessione c'è uid(registrato) mostra i pulsanti di profilo e di logout
-if (isset($_SESSION['user_id'])) {
-    echo "";
-    echo "<a href='profilo.php' style='text-decoration: none;'>
-            <button style='padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;'>Profilo</button>
-          </a>";
-    echo "<a href='logout.php' style='text-decoration: none;'>
-            <button style='padding: 8px 15px; background-color: darkred; color: white; border: none; border-radius: 4px; cursor: pointer;'>Logout</button>
-          </a>";
+    <!-- BOTTONI LOGIN / PROFILO -->
+    <div style="position: fixed; top: 10px; right: 20px; z-index: 1000; display: flex; gap: 10px;">
 
-}
-//se non lo è mostra i pulsanti di login o registrazione
-else {
-    echo "<a href='login.php' style='text-decoration: none;'>
-            <button style='padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;'>Accedi</button>
-          </a>";
-    echo "<a href='register.php' style='text-decoration: none;'>
-            <button style='padding: 8px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;'>Registrati</button>
-          </a>";
-}
-echo "</div>";
-echo "<h2>BookNest</h2>";
-echo "<form method='GET' action=''>
-        <input type='text' name='search' placeholder='Cerca...' 
-               value='" . htmlspecialchars($_GET['search'] ?? '') . "' 
-               style='padding: 10px; width: 300px; border: 1px solid #ccc; border-radius: 4px;'>
-        <button type='submit' style='padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;'>
-            Cerca
-        </button>
-      </form>";
-echo "<br><hr><br>";
+        <?php if (isset($_SESSION['user_id'])): ?>
 
-//prende il testo da searchbar
-$query = isset($_GET['search']) ? trim($_GET['search']) : "";
+            <a href="profilo.php"><button style="padding:8px 15px; background:#007bff; color:white; border:none; border-radius:4px;">Profilo</button></a>
+            <a href="logout.php"><button style="padding:8px 15px; background:darkred; color:white; border:none; border-radius:4px;">Logout</button></a>
 
-//se l'utente è registrato aggiunge nella cronologia
-if (isset($_SESSION['user_id']) and $query != "") {
-    $stmt = $pdo->prepare("insert into cronologia (id_utente, criterio_ricerca, filtro_genere, filtro_autore, data_ricerca) VALUES (?, ?, ?, ?, NOW())");
-    $stmt->execute([$_SESSION['user_id'], $query, $query, $query]);
-    $user = $stmt->fetch();
-}
+        <?php else: ?>
 
-if ($query !== "") {
-    //richiesta api
-    $url = "https://openlibrary.org/search.json?q=" . urlencode($query) . "&limit=10";
+            <a href="login.php"><button style="padding:8px 15px; background:#007bff; color:white; border:none; border-radius:4px;">Accedi</button></a>
+            <a href="register.php"><button style="padding:8px 15px; background:#28a745; color:white; border:none; border-radius:4px;">Registrati</button></a>
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_USERAGENT, 'MyStudentApp/1.0');
-    $response = curl_exec($ch);
-    $data = json_decode($response, true);
+        <?php endif; ?>
 
-    //se ritorna qualcosa stampa informazioni ricevuti
-    if (!empty($data['docs'])) {
-        foreach ($data['docs'] as $book) {
+    </div>
 
-            $iaId = $book['ia'][0] ?? null;
-            if (!$iaId) continue;
+    <h2>BookNest</h2>
 
-            $bookKey = str_replace('/works/', '', $book['key']);
+    <!-- FORM RICERCA -->
+    <form method="GET">
 
-            echo "<div style='border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 8px; display: flex; align-items: flex-start; gap: 20px;'>";
+        <input type="text"
+               name="search"
+               placeholder="Cerca..."
+               value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
 
-            echo "<a href='libro.php?id=$bookKey&ia=$iaId' style='text-decoration:none; color:inherit;'>";
-            $coverId = $book['cover_i'] ?? null;
-            $image = $coverId ? "https://covers.openlibrary.org/b/id/{$coverId}-M.jpg" : "https://via.placeholder.com/100x150?text=No+Cover";
-            echo "<img src='$image' alt='Cover' style='width: 100px; cursor:pointer;'>";
-            echo "</a>";
+        <?php
+        $countAutori = $pdo->query("SELECT COUNT(*) FROM Autore")->fetchColumn();
+        if ($countAutori > 0):
+            $autori = $pdo->query("SELECT id, nome FROM Autore ORDER BY nome ASC")->fetchAll();
+            ?>
+            <select name="autore">
+                <option value="">-- Autore --</option>
+                <?php foreach ($autori as $a): ?>
+                    <option value="<?= $a['id'] ?>"
+                        <?php if (isset($_GET['autore']) && $_GET['autore'] == $a['id']) echo "selected"; ?>>
+                        <?= htmlspecialchars($a['nome']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        <?php endif; ?>
 
-            echo "<div>";
-            echo "<a href='libro.php?id=$bookKey&ia=$iaId' style='text-decoration:none; color:inherit;'>";
-            echo "<strong style='font-size: 1.2em; cursor:pointer;'>" . htmlspecialchars($book['title']) . "</strong>";
-            echo "</a><br>";
 
-            echo "Autore: " . ($book['author_name'][0] ?? 'Sconosciuto') . "<br><br>";
+        <?php
+        $countGeneri = $pdo->query("SELECT COUNT(*) FROM Genere")->fetchColumn();
+        if ($countGeneri > 0):
+            $generi = $pdo->query("SELECT id, nome FROM Genere ORDER BY nome ASC")->fetchAll();
+            ?>
+            <select name="genere">
+                <option value="">-- Genere --</option>
+                <?php foreach ($generi as $g): ?>
+                    <option value="<?= $g['id'] ?>"
+                        <?php if (isset($_GET['genere']) && $_GET['genere'] == $g['id']) echo "selected"; ?>>
+                        <?= htmlspecialchars($g['nome']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        <?php endif; ?>
 
-            echo "</div>";
-            echo "</div>";
+        <button type="submit">Cerca</button>
 
-            echo "</div>";
-            echo "</div>";
-        }
-    } else {
-        echo "<p>Nessun libro trovato con PDF disponibile.</p>";
+    </form>
+
+    <br><hr><br>
+
+<?php
+
+$titolo = trim($_GET['search'] ?? '');
+$autore = $_GET['autore'] ?? '';
+$genere = $_GET['genere'] ?? '';
+
+//salvataggio in cronologia
+if (isset($_SESSION['user_id']) && $titolo !== '') {
+    //evita duplicati identici nello stesso giorno
+    $stmtCheck = $pdo->prepare("
+        SELECT id FROM cronologia
+        WHERE id_utente = ?
+        AND criterio_ricerca = ?
+        AND DATE(data_ricerca) = CURDATE()
+        LIMIT 1
+    ");
+
+    $stmtCheck->execute([
+        $_SESSION['user_id'],
+        $titolo
+    ]);
+
+    $exists = $stmtCheck->fetch();
+
+    if (!$exists) {
+        $stmtInsert = $pdo->prepare("
+            INSERT INTO cronologia 
+            (id_utente, criterio_ricerca, data_ricerca)
+            VALUES (?, ?, NOW())
+        ");
+
+        $stmtInsert->execute([
+            $_SESSION['user_id'],
+            $titolo
+        ]);
     }
-    curl_close($ch);
 }
+
+$libri_db = [];
+
+//ricerca nel DB
+if ($titolo !== '' || $autore !== '' || $genere !== '') {
+    $sql = "
+SELECT DISTINCT l.*
+FROM Libro l
+LEFT JOIN Scrivere s ON l.id = s.id_libro
+LEFT JOIN Autore a ON s.id_autore = a.id
+LEFT JOIN Appartenere ap ON l.id = ap.id_libro
+LEFT JOIN Genere g ON ap.id_genere = g.id
+WHERE 1=1
+";
+
+    $params = [];
+
+    if (!empty($titolo)) {
+        $sql .= " AND l.titolo LIKE ?";
+        $params[] = "%$titolo%";
+    }
+
+    if (!empty($autore)) {
+        $sql .= " AND a.id = ?";
+        $params[] = $autore;
+    }
+
+    if (!empty($genere)) {
+        $sql .= " AND g.id = ?";
+        $params[] = $genere;
+    }
+
+    $sql .= " ORDER BY l.titolo ASC";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $libri_db = $stmt->fetchAll();
+}
+
+//mostra risultati DB
+if (!empty($libri_db)) {
+    echo "<h3>Risultati dal Database</h3>";
+
+    foreach ($libri_db as $libro) {
+        // Autore
+        $stmtAut = $pdo->prepare("
+        SELECT a.nome
+        FROM Autore a
+        JOIN Scrivere s ON a.id = s.id_autore
+        WHERE s.id_libro = ?
+        LIMIT 1
+    ");
+        $stmtAut->execute([$libro['id']]);
+        $autoreNome = $stmtAut->fetchColumn() ?? "Sconosciuto";
+
+        //cover
+        $coverUrl = !empty($libro['cover_id'])
+            ? "https://covers.openlibrary.org/b/id/" . $libro['cover_id'] . "-M.jpg"
+            : "https://via.placeholder.com/100x150?text=No+Cover";
+
+        echo "<div style='border:1px solid #ddd; padding:15px; margin-bottom:20px; border-radius:8px; display:flex; gap:20px;'>";
+
+        echo "<a href='libro.php?id=" . $libro['open_library_id'] . "&ia=" . $libro['ia_id'] . "'>";
+        echo "<img src='$coverUrl' style='width:100px;'>";
+        echo "</a>";
+
+        echo "<div>";
+        echo "<a href='libro.php?id=" . $libro['open_library_id'] . "&ia=" . $libro['ia_id'] . "' style='text-decoration:none; color:black;'>";
+        echo "<strong style='font-size:1.2em;'>" . htmlspecialchars($libro['titolo']) . "</strong>";
+        echo "</a><br>";
+        echo "Autore: " . htmlspecialchars($autoreNome);
+        echo "</div>";
+
+        echo "</div>";
+    }
+}
+
+//se non trova, usa API
+if ($titolo !== '' && empty($libri_db)) {
+    echo "<h3>Risultati da OpenLibrary</h3>";
+
+    $url = "https://openlibrary.org/search.json?q=" . urlencode($titolo) . "&limit=10";
+    $response = @file_get_contents($url);
+
+    if ($response !== false) {
+        $data = json_decode($response, true);
+
+        if (!empty($data['docs'])) {
+            foreach ($data['docs'] as $book) {
+                $bookKey = str_replace('/works/', '', $book['key']);
+                $titleApi = $book['title'] ?? 'Senza titolo';
+                $authorApi = $book['author_name'][0] ?? 'Sconosciuto';
+                $coverId = $book['cover_i'] ?? null;
+                $iaId = $book['ia'][0] ?? null;
+
+                $image = $coverId
+                    ? "https://covers.openlibrary.org/b/id/{$coverId}-M.jpg"
+                    : "https://via.placeholder.com/100x150?text=No+Cover";
+
+                echo "<div style='border:1px solid #ddd; padding:15px; margin-bottom:20px; border-radius:8px; display:flex; gap:20px;'>";
+
+                echo "<a href='libro.php?id=$bookKey&ia=$iaId'>";
+                echo "<img src='$image' style='width:100px;'>";
+                echo "</a>";
+
+                echo "<div>";
+                echo "<a href='libro.php?id=$bookKey&ia=$iaId' style='text-decoration:none; color:black;'>";
+                echo "<strong style='font-size:1.2em;'>" . htmlspecialchars($titleApi) . "</strong>";
+                echo "</a><br>";
+                echo "Autore: " . htmlspecialchars($authorApi);
+                echo "</div>";
+
+                echo "</div>";
+            }
+        } else {
+            echo "<p>Nessun risultato trovato.</p>";
+        }
+
+    } else {
+        echo "<p>Errore nella chiamata API.</p>";
+    }
+}
+?>

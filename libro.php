@@ -25,6 +25,7 @@ $description = "Descrizione non disponibile.";
 if (isset($book['description'])) {
     $description = is_array($book['description']) ? $book['description']['value'] : $book['description'];
 }
+$coverId = $book['covers'][0] ?? null;
 
 try {
     $stmtCheck = $pdo->prepare("SELECT id FROM libro WHERE open_library_id = ?");
@@ -32,15 +33,71 @@ try {
     $existingBook = $stmtCheck->fetch();
 
     if (!$existingBook) {
-        $sqlInsert = "INSERT INTO libro (open_library_id, ia_id, titolo, descrizione, lingua) VALUES (?, ?, ?, ?, ?)";
+        //per eseguire più operazioni e le modifiche restano in sospeso finché non viene fatto il commit
+        $pdo->beginTransaction();
+
+        //per inserire libro
+        $sqlInsert = "INSERT INTO libro (open_library_id, ia_id, titolo, descrizione, lingua, cover_id)
+                        VALUES (?, ?, ?, ?, ?, ?)";
         $stmtInsert = $pdo->prepare($sqlInsert);
-        $stmtInsert->execute([$bookId, $iaId, $title, $description, 'en']);
+        $stmtInsert->execute([$bookId, $iaId, $title, $description, 'en', $coverId]);
         $db_book_id = $pdo->lastInsertId();
+
+        //per inserire autori
+        if (!empty($book['authors'])) {
+            foreach ($book['authors'] as $authorData) {
+                $authorKey = $authorData['author']['key'];
+                $authorUrl = "https://openlibrary.org{$authorKey}.json";
+
+                $authorJson = json_decode(file_get_contents($authorUrl), true);
+                $authorName = $authorJson['name'] ?? null;
+
+                if (!$authorName) continue;
+
+                //per controllare esistenza autore
+                $stmtCheckAuthor = $pdo->prepare("SELECT id FROM Autore WHERE nome = ?");
+                $stmtCheckAuthor->execute([$authorName]);
+                $existingAuthor = $stmtCheckAuthor->fetch();
+
+                if ($existingAuthor) {
+                    $author_id = $existingAuthor['id'];
+                } else {
+                    $stmtInsertAuthor = $pdo->prepare("INSERT INTO Autore (nome) VALUES (?)");
+                    $stmtInsertAuthor->execute([$authorName]);
+                    $author_id = $pdo->lastInsertId();
+                }
+
+                //relazione Scrivere
+                $stmtRel = $pdo->prepare("INSERT IGNORE INTO Scrivere (id_libro, id_autore) VALUES (?, ?)");
+                $stmtRel->execute([$db_book_id, $author_id]);
+            }
+        }
+
+        //per inserire generi
+        if (!empty($book['subjects'])) {
+            //prende al massimo 5 generi
+            foreach (array_slice($book['subjects'], 0, 5) as $subject) {
+                $stmtCheckGenre = $pdo->prepare("SELECT id FROM Genere WHERE nome = ?");
+                $stmtCheckGenre->execute([$subject]);
+                $existingGenre = $stmtCheckGenre->fetch();
+
+                if ($existingGenre) {
+                    $genre_id = $existingGenre['id'];
+                } else {
+                    $stmtInsertGenre = $pdo->prepare("INSERT INTO Genere (nome) VALUES (?)");
+                    $stmtInsertGenre->execute([$subject]);
+                    $genre_id = $pdo->lastInsertId();
+                }
+                $stmtRel = $pdo->prepare("INSERT IGNORE INTO Appartenere (id_libro, id_genere) VALUES (?, ?)");
+                $stmtRel->execute([$db_book_id, $genre_id]);
+            }
+        }
+        $pdo->commit();
     } else {
         $db_book_id = $existingBook['id'];
     }
 } catch (PDOException $e) {
-
+    die("Errore salvataggio libro: " . $e->getMessage());
 }
 
 $collezioni = [];

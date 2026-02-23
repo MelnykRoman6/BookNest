@@ -15,7 +15,6 @@ $success = "";
 $error = "";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
     $nome = trim($_POST['nome'] ?? '');
 
     if (empty($nome)) {
@@ -23,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (strlen($nome) > 255) {
         $error = "Il nome è troppo lungo (max 255 caratteri).";
     } else {
-
         //per controllare se esiste già una collezione con lo stesso nome per l'utente
         $stmtCheck = $pdo->prepare("SELECT id FROM collezione WHERE id_utente = ? AND nome = ?");
         $stmtCheck->execute([$user_id, $nome]);
@@ -31,7 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($stmtCheck->fetch()) {
             $error = "Hai già una collezione con questo nome.";
         } else {
-
             $stmt = $pdo->prepare("INSERT INTO collezione (id_utente, nome) VALUES (?, ?)");
             $stmt->execute([$user_id, $nome]);
 

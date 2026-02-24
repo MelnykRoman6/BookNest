@@ -1,9 +1,7 @@
 <?php
 session_start();
 require_once 'db.php';
-if (isset($pdo)) {
-    //echo "Connessione OK";
-} else {
+if (!isset($pdo)) {
     die("Errore: la variabile \$pdo non è definita in db.php");
 }
 
@@ -41,6 +39,23 @@ try {
     $stmtCron = $pdo->prepare("SELECT criterio_ricerca, data_ricerca FROM cronologia WHERE id_utente = ? ORDER BY data_ricerca DESC LIMIT 10");
     $stmtCron->execute([$user_id]);
     $cronologia = $stmtCron->fetchAll();
+
+//cronologia download
+    $stmtDownload = $pdo->prepare("
+        SELECT 
+            l.titolo,
+            f.tipo,
+            d.data_download
+        FROM Download d
+        JOIN Formato f ON d.id_formato = f.id
+        JOIN Libro l ON f.id_libro = l.id
+        WHERE d.id_utente = ?
+        ORDER BY d.data_download DESC
+        LIMIT 20
+    ");
+
+    $stmtDownload->execute([$user_id]);
+    $downloadHistory = $stmtDownload->fetchAll();
 
 } catch (PDOException $e) {
     die("Errore nel recupero dati: " . $e->getMessage());
@@ -168,6 +183,35 @@ try {
         <?php else: ?>
             <p>La tua cronologia è vuota.</p>
         <?php endif; ?>
+    </div>
+
+    <div class="section">
+        <h3>Cronologia Download</h3>
+
+        <?php if ($downloadHistory): ?>
+
+            <?php foreach ($downloadHistory as $dl): ?>
+
+                <div class="list-item">
+                    <div>
+                        <strong><?= htmlspecialchars($dl['titolo']) ?></strong>
+                        <br>
+                        <span class="date">
+                        <?= htmlspecialchars($dl['tipo']) ?>
+                    </span>
+                    </div>
+
+                    <span class="date">
+                    <?= date("d/m/Y H:i", strtotime($dl['data_download'])) ?>
+                </span>
+                </div>
+
+            <?php endforeach; ?>
+
+        <?php else: ?>
+            <p>Non hai ancora scaricato nessun libro.</p>
+        <?php endif; ?>
+
     </div>
 
 </div>

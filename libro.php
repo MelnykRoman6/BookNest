@@ -111,6 +111,18 @@ try {
             }
         }
         $pdo->commit();
+
+        //inserimento formato pdf
+        $stmtFormato = $pdo->prepare("
+            INSERT INTO Formato (id_libro, tipo, url)
+            VALUES (?, ?, ?)
+        ");
+
+        $stmtFormato->execute([
+                $db_book_id,
+                'pdf',
+                "https://archive.org/download/{$iaId}/{$iaId}.pdf"
+        ]);
     } else {
         $db_book_id = $existingBook['id'];
     }
@@ -194,7 +206,16 @@ if (isset($_SESSION['user_id'])) {
             <div class="action-btns" style="display: flex; flex-direction: column; gap: 10px;">
                 <?php
                 $pdfUrl = "https://archive.org/download/{$iaId}/{$iaId}.pdf";
-                $downloadParams = http_build_query(['file_url' => $pdfUrl, 'file_name' => $title]);
+
+                $stmtFormato = $pdo->prepare("SELECT id FROM Formato WHERE id_libro = ? AND tipo = 'pdf'");
+                $stmtFormato->execute([$db_book_id]);
+                $formato = $stmtFormato->fetch();
+
+                $downloadParams = http_build_query([
+                        'file_url' => $pdfUrl,
+                        'file_name' => $title,
+                        'id_formato' => $formato['id'] ?? null   // 👈 IMPORTANTE
+                ]);
                 ?>
                 <a href='download.php?<?php echo $downloadParams; ?>'><button class="btn btn-red">Scarica PDF</button></a>
                 <a href='reader.php?file=<?php echo urlencode($pdfUrl); ?>&title=<?php echo urlencode($title); ?>' target='_blank'><button class="btn btn-cyan">Leggi Online</button></a>

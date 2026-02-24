@@ -116,14 +116,18 @@ $libri_db = [];
 //ricerca nel DB
 if ($titolo !== '' || $autore !== '' || $genere !== '') {
     $sql = "
-SELECT DISTINCT l.*
-FROM Libro l
-LEFT JOIN Scrivere s ON l.id = s.id_libro
-LEFT JOIN Autore a ON s.id_autore = a.id
-LEFT JOIN Appartenere ap ON l.id = ap.id_libro
-LEFT JOIN Genere g ON ap.id_genere = g.id
-WHERE 1=1
-";
+        SELECT 
+            l.*,
+            AVG(r.rating) as media_rating,
+            COUNT(r.id) as totale_recensioni
+        FROM Libro l
+        LEFT JOIN Scrivere s ON l.id = s.id_libro
+        LEFT JOIN Autore a ON s.id_autore = a.id
+        LEFT JOIN Appartenere ap ON l.id = ap.id_libro
+        LEFT JOIN Genere g ON ap.id_genere = g.id
+        LEFT JOIN recensione r ON l.id = r.id_libro
+        WHERE 1=1
+        ";
 
     $params = [];
 
@@ -142,7 +146,7 @@ WHERE 1=1
         $params[] = $genere;
     }
 
-    $sql .= " ORDER BY l.titolo ASC";
+    $sql .= " GROUP BY l.id ORDER BY l.titolo ASC";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
@@ -150,14 +154,18 @@ WHERE 1=1
 
     if(empty($libri_db)) {
         $sql = "
-SELECT DISTINCT l.*
-FROM Libro l
-LEFT JOIN Scrivere s ON l.id = s.id_libro
-LEFT JOIN Autore a ON s.id_autore = a.id
-LEFT JOIN Appartenere ap ON l.id = ap.id_libro
-LEFT JOIN Genere g ON ap.id_genere = g.id
-WHERE 1=1
-";
+        SELECT 
+            l.*,
+            AVG(r.rating) as media_rating,
+            COUNT(r.id) as totale_recensioni
+        FROM Libro l
+        LEFT JOIN Scrivere s ON l.id = s.id_libro
+        LEFT JOIN Autore a ON s.id_autore = a.id
+        LEFT JOIN Appartenere ap ON l.id = ap.id_libro
+        LEFT JOIN Genere g ON ap.id_genere = g.id
+        LEFT JOIN recensione r ON l.id = r.id_libro
+        WHERE 1=1
+        ";
 
         $params = [];
 
@@ -176,7 +184,7 @@ WHERE 1=1
             $params[] = $genere;
         }
 
-        $sql .= " ORDER BY l.titolo ASC";
+        $sql .= " GROUP BY l.id ORDER BY l.titolo ASC";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
@@ -189,7 +197,25 @@ if (!empty($libri_db)) {
     echo "<h3>Risultati dal Database</h3>";
 
     foreach ($libri_db as $libro) {
-        // Autore
+        $media = $libro['media_rating'];
+        $totaleRec =  $libro['totale_recensioni'];
+
+        $stelle = '';
+
+        if ($totaleRec > 0) {
+            $stellePiene = floor($media);
+
+            for ($i = 0; $i < $stellePiene; $i++) {
+                $stelle .= "⭐";
+            }
+
+            // stelle vuote fino a 5
+            for ($i = $stellePiene; $i < 5; $i++) {
+                $stelle .= "☆";
+            }
+        }
+
+        //autore
         $stmtAut = $pdo->prepare("
         SELECT a.nome
         FROM Autore a
@@ -211,12 +237,30 @@ if (!empty($libri_db)) {
         echo "<img src='$coverUrl' style='width:100px;'>";
         echo "</a>";
 
-        echo "<div>";
+        echo "<div style='flex:1;'>";
+
         echo "<a href='libro.php?id=" . $libro['open_library_id'] . "&ia=" . $libro['ia_id'] . "' style='text-decoration:none; color:black;'>";
         echo "<strong style='font-size:1.2em;'>" . htmlspecialchars($libro['titolo']) . "</strong>";
         echo "</a><br>";
         echo "Autore: " . htmlspecialchars($autoreNome);
+
         echo "</div>";
+
+        // BLOCCO RATING A DESTRA
+        if ($totaleRec > 0) {
+            echo "<div style='min-width:150px; text-align:right;'>";
+
+            echo "<div style='color:#f5b301; font-size:1.1em; letter-spacing:2px;'>";
+            echo $stelle;
+            echo "</div>";
+
+            echo "<div style='font-size:0.9em; color:#666;'>";
+            echo round($media,1) . " / 5<br>";
+            echo "$totaleRec recensioni";
+            echo "</div>";
+
+            echo "</div>";
+        }
 
         echo "</div>";
     }

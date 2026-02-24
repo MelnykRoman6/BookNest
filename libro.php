@@ -179,7 +179,7 @@ if (isset($_SESSION['user_id'])) {
 </head>
 <body>
 
-<a href="javascript:history.back()" style="color: #17a2b8; text-decoration: none;">← Torna ai risultati</a>
+<a href="javascript:history.back()" style="color: #17a2b8; text-decoration: none;">← Torna alla pagina precedente</a>
 
 <div class="details-wrapper" style="margin-top: 20px;">
 

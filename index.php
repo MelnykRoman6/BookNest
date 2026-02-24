@@ -157,7 +157,12 @@ if ($titolo !== '' || $autore !== '' || $genere !== '') {
         SELECT 
             l.*,
             AVG(r.rating) as media_rating,
-            COUNT(r.id) as totale_recensioni
+            COALESCE(
+                (SELECT count(*) 
+                FROM recensione r1 
+                WHERE r1.id_libro = l.id), 
+                0) as totale_recensioni,
+            a.nome
         FROM Libro l
         LEFT JOIN Scrivere s ON l.id = s.id_libro
         LEFT JOIN Autore a ON s.id_autore = a.id
@@ -198,8 +203,7 @@ if (!empty($libri_db)) {
 
     foreach ($libri_db as $libro) {
         $media = $libro['media_rating'];
-        $totaleRec =  $libro['totale_recensioni'];
-
+        $totaleRec = $libro['totale_recensioni'];
         $stelle = '';
 
         if ($totaleRec > 0) {

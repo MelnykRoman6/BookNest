@@ -19,16 +19,22 @@ try {
     $stmtUser->execute([$user_id]);
     $user = $stmtUser->fetch();
 
-    $stmtCol = $pdo->prepare("SELECT 
+    $stmtCol = $pdo->prepare("
+                                    SELECT 
                                         c.id, 
                                         c.nome, 
                                         c.data_crea, 
-                                        COUNT(a.id_libro) AS total_libri
+                                        COUNT(a.id_libro) AS total_libri,
+                                        GROUP_CONCAT(l.titolo SEPARATOR '||') as titoli_libri,
+                                        GROUP_CONCAT(l.open_library_id SEPARATOR '||') as ids_libri,
+                                        GROUP_CONCAT(l.ia_id SEPARATOR '||') as ia_ids_libri
                                     FROM collezione c
                                     LEFT JOIN aggiungere a ON c.id = a.id_collezione
+                                    LEFT JOIN libro l ON l.id = a.id_libro
                                     WHERE c.id_utente = ?
                                     GROUP BY c.id
-                                    ORDER BY c.data_crea DESC");
+                                    ORDER BY c.data_crea DESC
+                                   ");
     $stmtCol->execute([$user_id]);
     $collezioni = $stmtCol->fetchAll();
 
@@ -79,16 +85,69 @@ try {
         </div>
 
         <?php if ($collezioni): ?>
+            <style>
+                .collapsible-header { cursor: pointer; transition: background 0.3s; }
+                .collapsible-header:hover { background: #333; }
+
+                .books-content {
+                    display: none;
+                    background: #252525;
+                    padding: 10px 20px;
+                    border-radius: 0 0 8px 8px;
+                    border-top: 1px solid #444;
+                }
+
+                .book-item {
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 8px 0;
+                    border-bottom: 1px solid #333;
+                }
+
+                .book-item:last-child { border-bottom: none; }
+
+                .btn-read-small {
+                    font-size: 12px;
+                    color: #17a2b8;
+                    text-decoration: none;
+                    border: 1px solid #17a2b8;
+                    padding: 2px 8px;
+                    border-radius: 4px;
+                }
+            </style>
+
             <?php foreach ($collezioni as $col): ?>
-                <div class="list-item" style="align-items: center;">
-                    <div>
-                        <strong><?php echo htmlspecialchars($col['nome']); ?></strong>
-                        <br>
-                        <span class="date">Creato il: <?php echo date("d/m/Y", strtotime($col['data_crea'])); ?></span>
+                <div style="margin-bottom: 15px; border: 1px solid #444; border-radius: 8px; overflow: hidden;">
+
+                    <div class="list-item collapsible-header" onclick="toggleCollection(<?php echo $col['id']; ?>)" style="margin-bottom: 0; border-bottom: none;">
+                        <div>
+                            <strong style="font-size: 1.1em; color: #fff;"><?php echo htmlspecialchars($col['nome']); ?></strong>
+                            <br>
+                            <span class="date">Creato il: <?php echo date("d/m/Y", strtotime($col['data_crea'])); ?></span>
+                        </div>
+                        <div style="background: #007bff; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.9em; font-weight: bold;">
+                            <?php echo $col['total_libri']; ?> libri
+                        </div>
                     </div>
 
-                    <div style="background: #007bff; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.9em; font-weight: bold;">
-                        <?php echo $col['total_libri']; ?> libri
+                    <div id="col-<?php echo $col['id']; ?>" class="books-content">
+                        <?php
+                        if ($col['total_libri'] > 0):
+                            $titoli = explode('||', $col['titoli_libri']);
+                            $ol_ids = explode('||', $col['ids_libri']);
+                            $ia_ids = explode('||', $col['ia_ids_libri']);
+
+                            for($i = 0; $i < count($titoli); $i++):
+                                ?>
+                                <div class="book-item">
+                                    <a href="libro.php?id=<?php echo $ol_ids[$i]; ?>&ia=<?php echo $ia_ids[$i]; ?>" style="color: #ccc; text-decoration: none;">
+                                        <?php echo htmlspecialchars($titoli[$i]); ?>
+                                    </a>
+                                    </div>
+                            <?php endfor; ?>
+                        <?php else: ?>
+                            <p style="color: #777; font-size: 0.9em;">Nessun libro in questa collezione.</p>
+                        <?php endif; ?>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -112,6 +171,17 @@ try {
     </div>
 
 </div>
+<script>
+    function toggleCollection(id) {
+        const content = document.getElementById('col-' + id);
 
+        if (content.style.display === "block") {
+            content.style.display = "none";
+        } else {
+            document.querySelectorAll('.books-content').forEach(el => el.style.display = 'none');
+            content.style.display = "block";
+        }
+    }
+</script>
 </body>
 </html>

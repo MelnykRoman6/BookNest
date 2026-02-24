@@ -213,7 +213,7 @@ if (!empty($libri_db)) {
                 $stelle .= "⭐";
             }
 
-            // stelle vuote fino a 5
+            //stelle vuote fino a 5
             for ($i = $stellePiene; $i < 5; $i++) {
                 $stelle .= "☆";
             }
@@ -271,7 +271,7 @@ if (!empty($libri_db)) {
 }
 
 //se non trova, usa API
-if ($titolo !== '' || empty($libri_db)) {
+if ($titolo !== '') {
     echo "<h3>Risultati da OpenLibrary</h3>";
 
     $url = "https://openlibrary.org/search.json?q=" . urlencode($titolo) . "&limit=10";
@@ -281,6 +281,12 @@ if ($titolo !== '' || empty($libri_db)) {
         $data = json_decode($response, true);
 
         if (!empty($data['docs'])) {
+            //prepara array di ID già presenti
+            $idsPresenti = [];
+            foreach ($libri_db as $libro) {
+                $idsPresenti[] = $libro['open_library_id'];
+            }
+
             foreach ($data['docs'] as $book) {
                 $bookKey = str_replace('/works/', '', $book['key']);
                 $titleApi = $book['title'] ?? 'Senza titolo';
@@ -288,31 +294,7 @@ if ($titolo !== '' || empty($libri_db)) {
                 $coverId = $book['cover_i'] ?? null;
                 $iaId = $book['ia'][0] ?? null;
 
-                if(!empty($libri_db)){
-                    foreach ($libri_db as $libro) {
-                        if ($titleApi != $libro['titolo']) {
-                            $image = $coverId
-                                    ? "https://covers.openlibrary.org/b/id/{$coverId}-M.jpg"
-                                    : "https://via.placeholder.com/100x150?text=No+Cover";
-
-                            echo "<div style='border:1px solid #ddd; padding:15px; margin-bottom:20px; border-radius:8px; display:flex; gap:20px;'>";
-
-                            echo "<a href='libro.php?id=$bookKey&ia=$iaId'>";
-                            echo "<img src='$image' style='width:100px;'>";
-                            echo "</a>";
-
-                            echo "<div>";
-                            echo "<a href='libro.php?id=$bookKey&ia=$iaId' style='text-decoration:none; color:black;'>";
-                            echo "<strong style='font-size:1.2em;'>" . htmlspecialchars($titleApi) . "</strong>";
-                            echo "</a><br>";
-                            echo "Autore: " . htmlspecialchars($authorApi);
-                            echo "</div>";
-
-                            echo "</div>";
-                        }
-                    }
-                }
-                else {
+                if (!in_array($bookKey, $idsPresenti)) {
                     $image = $coverId
                             ? "https://covers.openlibrary.org/b/id/{$coverId}-M.jpg"
                             : "https://via.placeholder.com/100x150?text=No+Cover";

@@ -1,0 +1,107 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #1a1a1a;
+    color: #fff;
+    padding: 40px;
+    margin: 0;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    background: #252525;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+h2, h3 {
+    color: #fff;
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+.section {
+    margin-bottom: 40px;
+}
+
+.info-box {
+    background: #2d2d2d;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #444;
+}
+
+.info-box p {
+    margin: 5px 0;
+    color: #ccc;
+}
+
+.list-item {
+    padding: 15px;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2d2d2d;
+    transition: background 0.3s;
+}
+
+.collapsible-header {
+    cursor: pointer;
+}
+
+.collapsible-header:hover {
+    background: #383838;
+}
+
+.books-content {
+    display: none; /* Скрыто по умолчанию */
+    background: #1e1e1e;
+    padding: 10px 20px;
+    border-radius: 0 0 8px 8px;
+    border-top: 1px solid #444;
+}
+
+.book-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #333;
+}
+
+.book-item:last-child { border-bottom: none; }
+
+.book-link {
+    color: #17a2b8;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.book-link:hover { text-decoration: underline; }
+
+.btn-create {
+    background: #28a745;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+.badge-count {
+    background: #007bff;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: bold;
+}
+
+.search-term { font-style: italic; color: #17a2b8; }
+.date { font-size: 0.85em; color: #888; }
+.back-link { text-decoration: none; color: #17a2b8; display: block; margin-bottom: 20px; }

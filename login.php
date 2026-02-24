@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'db.php';
+
 if (isset($pdo)) {
     //echo "Connessione OK";
 } else {
@@ -32,18 +33,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Login - BookNest</title>
+    <link rel="stylesheet" href="styles/stile_login.css">
 </head>
-<body style="font-family: Arial; text-align: center; padding-top: 50px;">
-<form method="POST" style="display: inline-block; text-align: left; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
-    <h2>Login BookNest</h2>
-    <?php if(isset($error)) echo "<p style='color:red;'>$error</p>"; ?>
+<body>
 
-    <label>Email:</label><br>
-    <input type="email" name="email" required style="margin-bottom: 10px; width: 250px;"><br>
-    <label>Password:</label><br>
-    <input type="password" name="password" required style="margin-bottom: 20px; width: 250px;"><br>
-    <button type="submit" style="width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer;">Accedi</button>
-    <p>Non hai un account? <a href="register.php">Registrati</a></p>
-</form>
+<div class="auth-container">
+    <form method="POST" class="auth-form">
+        <h2>Login BookNest</h2>
+
+        <?php if(isset($error)): ?>
+            <div class="error-msg"><?php echo $error; ?></div>
+        <?php endif; ?>
+
+        <label>Email:</label>
+        <input type="email" name="email" required placeholder="Inserisci la tua email">
+
+        <label>Password:</label>
+        <input type="password" name="password" required placeholder="Inserisci la password">
+
+        <button type="submit" class="btn-auth">Accedi</button>
+
+        <div class="auth-footer">
+            <p>Non hai un account? <a href="register.php">Registrati</a></p>
+        </div>
+    </form>
+</div>
+
 </body>
 </html>

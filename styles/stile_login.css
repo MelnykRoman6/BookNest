@@ -1,0 +1,87 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a; /* Темный фон */
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.auth-container {
+    background: #252525;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    width: 100%;
+    max-width: 350px;
+    text-align: left;
+}
+
+.auth-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.error-msg {
+    color: #ff4d4d;
+    background: rgba(255, 77, 77, 0.1);
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.auth-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    color: #bbb;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    background: #333;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: white;
+    box-sizing: border-box; /* Чтобы padding не раздувал ширину */
+    outline: none;
+}
+
+.auth-form input:focus {
+    border-color: #007bff;
+}
+
+.btn-auth {
+    width: 100%;
+    padding: 12px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1em;
+    transition: background 0.3s;
+}
+
+.btn-auth:hover {
+    background: #0056b3;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: #888;
+}
+
+.auth-footer a {
+    color: #17a2b8;
+    text-decoration: none;
+}

@@ -6,18 +6,26 @@ if (!isset($pdo)) {
 }
 ?>
 
-<!-- BOTTONI LOGIN / PROFILO -->
-<div style="position: fixed; top: 10px; right: 20px; z-index: 1000; display: flex; gap: 10px;">
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Dettagli Libro</title>
+    <link rel="stylesheet" href="styles/stile_libro.css">
+</head>
+<body>
+
+<div class="user-menu">
 
     <?php if (isset($_SESSION['user_id'])): ?>
 
-        <a href="profilo.php"><button style="padding:8px 15px; background:#007bff; color:white; border:none; border-radius:4px;">Profilo</button></a>
-        <a href="logout.php"><button style="padding:8px 15px; background:darkred; color:white; border:none; border-radius:4px;">Logout</button></a>
+        <a href="profilo.php" class="btn-menu btn-blue">Profilo</a>
+        <a href="logout.php" class="btn-menu btn-red-dark">Logout</a>
 
     <?php else: ?>
 
-        <a href="login.php"><button style="padding:8px 15px; background:#007bff; color:white; border:none; border-radius:4px;">Accedi</button></a>
-        <a href="register.php"><button style="padding:8px 15px; background:#28a745; color:white; border:none; border-radius:4px;">Registrati</button></a>
+        <a href="login.php" class="btn-menu btn-blue">Accedi</a>
+        <a href="register.php" class="btn-menu btn-green-reg">Registrati</a>
 
     <?php endif; ?>
 
@@ -169,31 +177,9 @@ if (isset($_SESSION['user_id'])) {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <title><?php echo htmlspecialchars($title); ?> - Dettagli</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #1a1a1a; color: #fff; padding: 40px; line-height: 1.6; margin: 0; }
-        .details-wrapper { display: flex; gap: 40px; max-width: 1200px; margin: 0; align-items: flex-start; }
-        .side-panel { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; gap: 15px; }
-        .book-cover { width: 100%; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; cursor: pointer; color: white; font-weight: bold; }
-        .btn-red { background: #dc3545; }
-        .btn-cyan { background: #17a2b8; }
-        .collection-form { background: #2d2d2d; padding: 15px; border-radius: 8px; margin-top: 10px; }
-        .select-wrapper { display: flex; gap: 8px; margin-top: 10px; }
-        select { background: #3d3d3d; color: #fff; border: 1px solid #444; padding: 8px; border-radius: 4px; flex-grow: 1; }
-        .main-content { flex: 1; }
-        .tag { background: #333; padding: 6px 12px; border-radius: 20px; font-size: 12px; margin: 0 5px 5px 0; display: inline-block; border: 1px solid #444; }
-    </style>
-</head>
-<body>
+<a href="javascript:history.back()" class="back-link">← Torna alla pagina precedente</a>
 
-<a href="javascript:history.back()" style="color: #17a2b8; text-decoration: none;">← Torna alla pagina precedente</a>
-
-<div class="details-wrapper" style="margin-top: 20px;">
+<div class="details-wrapper">
 
     <div class="side-panel">
         <?php
@@ -203,7 +189,7 @@ if (isset($_SESSION['user_id'])) {
         <img src="<?php echo $coverUrl; ?>" class="book-cover" alt="Cover">
 
         <?php if ($iaId): ?>
-            <div class="action-btns" style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="action-btns">
                 <?php
                 $pdfUrl = "https://archive.org/download/{$iaId}/{$iaId}.pdf";
 
@@ -217,8 +203,8 @@ if (isset($_SESSION['user_id'])) {
                         'id_formato' => $formato['id'] ?? null   // 👈 IMPORTANTE
                 ]);
                 ?>
-                <a href='download.php?<?php echo $downloadParams; ?>'><button class="btn btn-red">Scarica PDF</button></a>
-                <a href='reader.php?file=<?php echo urlencode($pdfUrl); ?>&title=<?php echo urlencode($title); ?>' target='_blank'><button class="btn btn-cyan">Leggi Online</button></a>
+                <a href='download.php?<?php echo $downloadParams; ?>'><button class="btn-action btn-red">Scarica PDF</button></a>
+                <a href='reader.php?file=<?php echo urlencode($pdfUrl); ?>&title=<?php echo urlencode($title); ?>' target='_blank'><button class="btn-action btn-cyan">Leggi Online</button></a>
             </div>
         <?php endif; ?>
 
@@ -227,14 +213,14 @@ if (isset($_SESSION['user_id'])) {
                 <form action="salva_in_col.php" method="POST">
                     <input type="hidden" name="book_id" value="<?php echo htmlspecialchars($bookId); ?>">
                     <input type="hidden" name="db_book_id" value="<?php echo $db_book_id; ?>">
-                    <label style="font-size: 13px; color: #bbb;">Aggiungi a una collezione:</label>
+                    <label class="collection-label">Aggiungi a una collezione:</label>
                     <div class="select-wrapper">
-                        <select name="collection_id">
+                        <select name="collection_id" class="select-dark">
                             <?php foreach ($collezioni as $col): ?>
                                 <option value="<?php echo $col['id']; ?>"><?php echo htmlspecialchars($col['nome']); ?></option>
                             <?php endforeach; ?>
                         </select>
-                        <button type="submit" style="background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;">Salva</button>
+                        <button type="submit" class="btn-save">Salva</button>
                     </div>
                 </form>
             </div>
@@ -242,9 +228,9 @@ if (isset($_SESSION['user_id'])) {
     </div>
 
     <div class="main-content">
-        <h1 style="margin-top: 0;"><?php echo htmlspecialchars($title); ?></h1>
+        <h1><?php echo htmlspecialchars($title); ?></h1>
         <h3>Descrizione:</h3>
-        <p style="color: #ccc;"><?php echo nl2br(htmlspecialchars($description)); ?></p>
+        <p class="description-text"><?php echo nl2br(htmlspecialchars($description)); ?></p>
 
         <?php if (isset($book['subjects'])): ?>
             <h3>Soggetti:</h3>
@@ -254,9 +240,6 @@ if (isset($_SESSION['user_id'])) {
         <?php endif; ?>
     </div>
 </div>
-
-</body>
-</html>
 
 <hr>
 
@@ -268,35 +251,25 @@ if (isset($_SESSION['user_id'])) {
     $stmtCheckUserReview->execute([$db_book_id, $_SESSION['user_id']]);
     $recensito = $stmtCheckUserReview->fetch();
     if (!$recensito) :
-    ?>
+        ?>
 
-    <h3>Scrivi una recensione</h3>
+        <h3>Scrivi una recensione</h3>
 
-    <form method="POST">
-
-        <label>Valutazione:</label>
-        <select name="rating" required>
-            <option value="">-- Voto --</option>
-            <option value="1">⭐</option>
-            <option value="2">⭐⭐</option>
-            <option value="3">⭐⭐⭐</option>
-            <option value="4">⭐⭐⭐⭐</option>
-            <option value="5">⭐⭐⭐⭐⭐</option>
-        </select>
-
-        <br><br>
-
-        <textarea name="commento"
-                  placeholder="Scrivi la tua recensione..."
-                  rows="4"
-                  cols="50"></textarea>
-
-        <br><br>
-
-        <button type="submit" name="invia_recensione">
-            Pubblica
-        </button>
-    </form>
+        <form method="POST">
+            <label>Valutazione:</label>
+            <select name="rating" required>
+                <option value="">-- Voto --</option>
+                <option value="1">⭐</option>
+                <option value="2">⭐⭐</option>
+                <option value="3">⭐⭐⭐</option>
+                <option value="4">⭐⭐⭐⭐</option>
+                <option value="5">⭐⭐⭐⭐⭐</option>
+            </select>
+            <br><br>
+            <textarea name="commento" placeholder="Scrivi la tua recensione..." rows="4" cols="50"></textarea>
+            <br><br>
+            <button type="submit" name="invia_recensione">Pubblica</button>
+        </form>
 
     <?php else: ?>
         <p><b>Hai già recensito questo libro.</b></p>
@@ -323,18 +296,19 @@ $recensioni = $stmtRec->fetchAll();
 if ($recensioni):
     foreach ($recensioni as $rec):
         ?>
-
-        <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+        <div class="review-card">
             <strong><?= htmlspecialchars($rec['email']) ?></strong>
             — <?= str_repeat("⭐", $rec['rating']) ?>
             <br><br>
             <?= nl2br(htmlspecialchars($rec['commento'])) ?>
             <br><small><?= $rec['data_rec'] ?></small>
         </div>
-
     <?php
     endforeach;
 else:
     echo "<p>Nessuna recensione ancora.</p>";
 endif;
 ?>
+
+</body>
+</html>

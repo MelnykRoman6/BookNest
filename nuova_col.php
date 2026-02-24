@@ -43,15 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Nuova Collezione</title>
-    <style>
-        body { font-family: Arial; background: #f4f4f9; padding: 40px; }
-        .box { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; }
-        button { padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; }
-        button:hover { background: #218838; }
-        .error { color: red; margin-bottom: 10px; }
-        .success { color: green; margin-bottom: 10px; }
-    </style>
+    <link rel="stylesheet" href="styles/stile_nuova_col.css">
 </head>
 <body>
 

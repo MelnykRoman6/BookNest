@@ -15,7 +15,3 @@ try {
 } catch (PDOException $e) {
     die("Connessione fallita: " . $e->getMessage());
 }
-
-
-
-

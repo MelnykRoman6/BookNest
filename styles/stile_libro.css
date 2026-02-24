@@ -1,0 +1,145 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #1a1a1a;
+    color: #fff;
+    padding: 40px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.user-menu {
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    gap: 10px;
+}
+
+.btn-menu {
+    padding: 8px 15px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.btn-blue { background: #007bff; }
+.btn-red-dark { background: darkred; }
+.btn-green-reg { background: #28a745; }
+
+.details-wrapper {
+    display: flex;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 20px 0 0 0;
+    align-items: flex-start;
+}
+
+.side-panel {
+    width: 300px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.book-cover {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+}
+
+.action-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-action {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+}
+
+.btn-red { background: #dc3545; }
+.btn-cyan { background: #17a2b8; }
+
+.collection-form {
+    background: #2d2d2d;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.collection-label {
+    font-size: 13px;
+    color: #bbb;
+}
+
+.select-wrapper {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.select-dark {
+    background: #3d3d3d;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 8px;
+    border-radius: 4px;
+    flex-grow: 1;
+}
+
+.btn-save {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.main-content {
+    flex: 1;
+}
+
+.main-content h1 {
+    margin-top: 0;
+}
+
+.description-text {
+    color: #ccc;
+}
+
+.tag {
+    background: #333;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin: 0 5px 5px 0;
+    display: inline-block;
+    border: 1px solid #444;
+}
+
+.review-card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.review-card small {
+    color: #888;
+}
+
+.back-link {
+    color: #17a2b8;
+    text-decoration: none;
+}

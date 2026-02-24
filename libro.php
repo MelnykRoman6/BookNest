@@ -1,11 +1,29 @@
 <?php
 session_start();
 require_once 'db.php';
-if (isset($pdo)) {
-    //echo "Connessione OK";
-} else {
+if (!isset($pdo)) {
     die("Errore: la variabile \$pdo non è definita in db.php");
 }
+?>
+
+<!-- BOTTONI LOGIN / PROFILO -->
+<div style="position: fixed; top: 10px; right: 20px; z-index: 1000; display: flex; gap: 10px;">
+
+    <?php if (isset($_SESSION['user_id'])): ?>
+
+        <a href="profilo.php"><button style="padding:8px 15px; background:#007bff; color:white; border:none; border-radius:4px;">Profilo</button></a>
+        <a href="logout.php"><button style="padding:8px 15px; background:darkred; color:white; border:none; border-radius:4px;">Logout</button></a>
+
+    <?php else: ?>
+
+        <a href="login.php"><button style="padding:8px 15px; background:#007bff; color:white; border:none; border-radius:4px;">Accedi</button></a>
+        <a href="register.php"><button style="padding:8px 15px; background:#28a745; color:white; border:none; border-radius:4px;">Registrati</button></a>
+
+    <?php endif; ?>
+
+</div>
+
+<?php
 $bookId = $_GET['id'] ?? null;
 $iaId = $_GET['ia'] ?? null;
 
@@ -100,6 +118,37 @@ try {
     die("Errore salvataggio libro: " . $e->getMessage());
 }
 
+if (isset($_POST['invia_recensione']) && isset($_SESSION['user_id'])) {
+    $rating = $_POST['rating'];
+    $commento = trim($_POST['commento'] ?? '');
+
+    //controllo se ha già recensito
+    $stmtCheck = $pdo->prepare("
+        SELECT id FROM recensione
+        WHERE id_libro = ? AND id_utente = ?
+    ");
+    $stmtCheck->execute([$db_book_id, $_SESSION['user_id']]);
+
+    if (!$stmtCheck->fetch()) {
+        $stmtInsert = $pdo->prepare("
+            INSERT INTO recensione
+            (id_libro, id_utente, rating, commento, data_rec)
+            VALUES (?, ?, ?, ?, NOW())
+        ");
+
+        $stmtInsert->execute([
+                $db_book_id,
+                $_SESSION['user_id'],
+                $rating,
+                $commento
+        ]);
+    }
+
+    //per evitare reinvio form
+    header("Location: libro.php?id=" . $_GET['id'] . "&ia=" . $_GET['ia']);
+    exit;
+}
+
 $collezioni = [];
 if (isset($_SESSION['user_id'])) {
     $stmtCol = $pdo->prepare("SELECT id, nome FROM collezione WHERE id_utente = ?");
@@ -187,3 +236,84 @@ if (isset($_SESSION['user_id'])) {
 
 </body>
 </html>
+
+<hr>
+
+<?php if (isset($_SESSION['user_id'])):
+    $stmtCheckUserReview = $pdo->prepare("
+        SELECT id FROM recensione
+        WHERE id_libro = ? AND id_utente = ?
+    ");
+    $stmtCheckUserReview->execute([$db_book_id, $_SESSION['user_id']]);
+    $recensito = $stmtCheckUserReview->fetch();
+    if (!$recensito) :
+    ?>
+
+    <h3>Scrivi una recensione</h3>
+
+    <form method="POST">
+
+        <label>Valutazione:</label>
+        <select name="rating" required>
+            <option value="">-- Voto --</option>
+            <option value="1">⭐</option>
+            <option value="2">⭐⭐</option>
+            <option value="3">⭐⭐⭐</option>
+            <option value="4">⭐⭐⭐⭐</option>
+            <option value="5">⭐⭐⭐⭐⭐</option>
+        </select>
+
+        <br><br>
+
+        <textarea name="commento"
+                  placeholder="Scrivi la tua recensione..."
+                  rows="4"
+                  cols="50"></textarea>
+
+        <br><br>
+
+        <button type="submit" name="invia_recensione">
+            Pubblica
+        </button>
+    </form>
+
+    <?php else: ?>
+        <p><b>Hai già recensito questo libro.</b></p>
+    <?php endif; ?>
+<?php else: ?>
+    <p><b>Effettua il login per scrivere una recensione.</b></p>
+<?php endif; ?>
+
+<hr>
+<h3>Recensioni</h3>
+
+<?php
+$stmtRec = $pdo->prepare("
+    SELECT r.*, u.email
+    FROM recensione r
+    JOIN utente u ON r.id_utente = u.id
+    WHERE r.id_libro = ?
+    ORDER BY r.data_rec DESC
+");
+
+$stmtRec->execute([$db_book_id]);
+$recensioni = $stmtRec->fetchAll();
+
+if ($recensioni):
+    foreach ($recensioni as $rec):
+        ?>
+
+        <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+            <strong><?= htmlspecialchars($rec['email']) ?></strong>
+            — <?= str_repeat("⭐", $rec['rating']) ?>
+            <br><br>
+            <?= nl2br(htmlspecialchars($rec['commento'])) ?>
+            <br><small><?= $rec['data_rec'] ?></small>
+        </div>
+
+    <?php
+    endforeach;
+else:
+    echo "<p>Nessuna recensione ancora.</p>";
+endif;
+?>

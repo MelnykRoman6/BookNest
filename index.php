@@ -43,7 +43,7 @@ if (!isset($pdo)) {
                 <option value="">-- Autore --</option>
                 <?php foreach ($autori as $a): ?>
                     <option value="<?= $a['id'] ?>"
-                        <?php if (isset($_GET['autore']) && $_GET['autore'] == $a['id']) echo "selected"; ?>>
+                            <?php if (isset($_GET['autore']) && $_GET['autore'] == $a['id']) echo "selected"; ?>>
                         <?= htmlspecialchars($a['nome']) ?>
                     </option>
                 <?php endforeach; ?>
@@ -60,7 +60,7 @@ if (!isset($pdo)) {
                 <option value="">-- Genere --</option>
                 <?php foreach ($generi as $g): ?>
                     <option value="<?= $g['id'] ?>"
-                        <?php if (isset($_GET['genere']) && $_GET['genere'] == $g['id']) echo "selected"; ?>>
+                            <?php if (isset($_GET['genere']) && $_GET['genere'] == $g['id']) echo "selected"; ?>>
                         <?= htmlspecialchars($g['nome']) ?>
                     </option>
                 <?php endforeach; ?>
@@ -91,8 +91,8 @@ if (isset($_SESSION['user_id']) && $titolo !== '') {
     ");
 
     $stmtCheck->execute([
-        $_SESSION['user_id'],
-        $titolo
+            $_SESSION['user_id'],
+            $titolo
     ]);
 
     $exists = $stmtCheck->fetch();
@@ -105,8 +105,8 @@ if (isset($_SESSION['user_id']) && $titolo !== '') {
         ");
 
         $stmtInsert->execute([
-            $_SESSION['user_id'],
-            $titolo
+                $_SESSION['user_id'],
+                $titolo
         ]);
     }
 }
@@ -147,6 +147,41 @@ WHERE 1=1
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
     $libri_db = $stmt->fetchAll();
+
+    if(empty($libri_db)) {
+        $sql = "
+SELECT DISTINCT l.*
+FROM Libro l
+LEFT JOIN Scrivere s ON l.id = s.id_libro
+LEFT JOIN Autore a ON s.id_autore = a.id
+LEFT JOIN Appartenere ap ON l.id = ap.id_libro
+LEFT JOIN Genere g ON ap.id_genere = g.id
+WHERE 1=1
+";
+
+        $params = [];
+
+        if (!empty($titolo)) {
+            $sql .= " AND a.nome LIKE ?";
+            $params[] = "%$titolo%";
+        }
+
+        if (!empty($autore)) {
+            $sql .= " AND a.id = ?";
+            $params[] = $autore;
+        }
+
+        if (!empty($genere)) {
+            $sql .= " AND g.id = ?";
+            $params[] = $genere;
+        }
+
+        $sql .= " ORDER BY l.titolo ASC";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        $libri_db = $stmt->fetchAll();
+    }
 }
 
 //mostra risultati DB
@@ -167,8 +202,8 @@ if (!empty($libri_db)) {
 
         //cover
         $coverUrl = !empty($libro['cover_id'])
-            ? "https://covers.openlibrary.org/b/id/" . $libro['cover_id'] . "-M.jpg"
-            : "https://via.placeholder.com/100x150?text=No+Cover";
+                ? "https://covers.openlibrary.org/b/id/" . $libro['cover_id'] . "-M.jpg"
+                : "https://via.placeholder.com/100x150?text=No+Cover";
 
         echo "<div style='border:1px solid #ddd; padding:15px; margin-bottom:20px; border-radius:8px; display:flex; gap:20px;'>";
 
@@ -188,7 +223,7 @@ if (!empty($libri_db)) {
 }
 
 //se non trova, usa API
-if ($titolo !== '' && empty($libri_db)) {
+if ($titolo !== '') {
     echo "<h3>Risultati da OpenLibrary</h3>";
 
     $url = "https://openlibrary.org/search.json?q=" . urlencode($titolo) . "&limit=10";
@@ -205,24 +240,28 @@ if ($titolo !== '' && empty($libri_db)) {
                 $coverId = $book['cover_i'] ?? null;
                 $iaId = $book['ia'][0] ?? null;
 
-                $image = $coverId
-                    ? "https://covers.openlibrary.org/b/id/{$coverId}-M.jpg"
-                    : "https://via.placeholder.com/100x150?text=No+Cover";
+                foreach ($libri_db as $libro) {
+                    if ($titleApi != $libro['titolo']) {
+                        $image = $coverId
+                                ? "https://covers.openlibrary.org/b/id/{$coverId}-M.jpg"
+                                : "https://via.placeholder.com/100x150?text=No+Cover";
 
-                echo "<div style='border:1px solid #ddd; padding:15px; margin-bottom:20px; border-radius:8px; display:flex; gap:20px;'>";
+                        echo "<div style='border:1px solid #ddd; padding:15px; margin-bottom:20px; border-radius:8px; display:flex; gap:20px;'>";
 
-                echo "<a href='libro.php?id=$bookKey&ia=$iaId'>";
-                echo "<img src='$image' style='width:100px;'>";
-                echo "</a>";
+                        echo "<a href='libro.php?id=$bookKey&ia=$iaId'>";
+                        echo "<img src='$image' style='width:100px;'>";
+                        echo "</a>";
 
-                echo "<div>";
-                echo "<a href='libro.php?id=$bookKey&ia=$iaId' style='text-decoration:none; color:black;'>";
-                echo "<strong style='font-size:1.2em;'>" . htmlspecialchars($titleApi) . "</strong>";
-                echo "</a><br>";
-                echo "Autore: " . htmlspecialchars($authorApi);
-                echo "</div>";
+                        echo "<div>";
+                        echo "<a href='libro.php?id=$bookKey&ia=$iaId' style='text-decoration:none; color:black;'>";
+                        echo "<strong style='font-size:1.2em;'>" . htmlspecialchars($titleApi) . "</strong>";
+                        echo "</a><br>";
+                        echo "Autore: " . htmlspecialchars($authorApi);
+                        echo "</div>";
 
-                echo "</div>";
+                        echo "</div>";
+                    }
+                }
             }
         } else {
             echo "<p>Nessun risultato trovato.</p>";

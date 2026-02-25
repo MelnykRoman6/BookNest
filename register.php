@@ -1,9 +1,7 @@
 <?php
 session_start();
 require_once 'db.php';
-if (isset($pdo)) {
-    //echo "Connessione OK";
-} else {
+if (!isset($pdo)) {
     die("Errore: la variabile \$pdo non è definita in db.php");
 }
 
@@ -35,13 +33,13 @@ if (isset($_POST['send_code'])) {
         $mail->setFrom('melnykromandev@gmail.com', 'BookNest');
         $mail->addAddress($email);
         $mail->isHTML(true);
-        $mail->Subject = 'Il tuo codice di verifica BookNest';
-        $mail->Body    = "Il tuo codice di verifica è: <b>$code</b>";
+        $mail->Subject = 'Your BookNest verification code';
+        $mail->Body    = "Your verification code is: <b>$code</b>";
 
         $mail->send();
-        $msg = "Codice inviato a $email";
+        $msg = "Code sent to $email";
     } catch (Exception $e) {
-        $msg = "Errore invio: {$mail->ErrorInfo}";
+        $msg = "Sending error: {$mail->ErrorInfo}";
     }
 }
 
@@ -63,10 +61,10 @@ if (isset($_POST['register'])) {
             $new_user_id = $pdo->lastInsertId();
 
             $base_collections = [
-                'Sto leggendo',
-                'Letto',
-                'Voglio leggere',
-                'Preferiti'
+                    'Reading',
+                    'Finished',
+                    'I want to read',
+                    'Favorites'
             ];
             //creazione delle collezioni
             $sqlCol = "INSERT INTO collezione (id_utente, nome, data_crea) VALUES (?, ?, NOW())";
@@ -85,10 +83,10 @@ if (isset($_POST['register'])) {
 
         } catch (PDOException $e) {
             $pdo->rollBack();
-            $error = "Errore durante la registrazione: " . $e->getMessage();
+            $error = "Error during registration: " . $e->getMessage();
         }
     } else {
-        $error = "Codice errato!";
+        $error = "Incorrect code!";
     }
 }
 ?>
@@ -97,13 +95,13 @@ if (isset($_POST['register'])) {
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Registrazione - BookNest</title>
+    <title>Registration - BookNest</title>
     <link rel="stylesheet" href="styles/stile_login.css">
 </head>
 <body>
 
 <div class="auth-container">
-    <h2>Registrazione</h2>
+    <h2>Registration</h2>
 
     <form method="POST" class="auth-form">
         <label>Email:</label>
@@ -111,7 +109,7 @@ if (isset($_POST['register'])) {
             <input type="email" name="email"
                    value="<?php echo $_SESSION['temp_email'] ?? ''; ?>"
                    required placeholder="Email"
-                   style="margin-bottom: 0;"> <button type="submit" name="send_code" class="btn-auth" style="width: auto; padding: 0 15px;">Invia</button>
+                   style="margin-bottom: 0;"> <button type="submit" name="send_code" class="btn-auth" style="width: auto; padding: 0 15px;">Send</button>
         </div>
         <?php if(isset($msg)) echo "<div style='color: #17a2b8; font-size: 0.8em; margin-top: 5px;'>$msg</div>"; ?>
     </form>
@@ -119,10 +117,10 @@ if (isset($_POST['register'])) {
     <hr style="margin: 20px 0; border: 0; border-top: 1px solid #444;">
 
     <form method="POST" class="auth-form">
-        <label>Codice ricevuto:</label>
+        <label>Code received:</label>
         <input type="text" name="ver_code" placeholder="123456" required>
 
-        <label>Scegli Password:</label>
+        <label>Select password:</label>
         <input type="password" name="password" placeholder="Password" required>
 
         <button type="submit" name="register" class="btn-auth" style="background: #28a745;">Crea Account</button>
@@ -132,7 +130,7 @@ if (isset($_POST['register'])) {
         <?php endif; ?>
 
         <div class="auth-footer">
-            <p>Hai già un account? <a href="login.php">Accedi</a></p>
+            <p>Already have an account? <a href="login.php">Log in</a></p>
         </div>
     </form>
 </div>

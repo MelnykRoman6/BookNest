@@ -10,22 +10,35 @@ if (!isset($pdo)) {
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Dettagli Libro</title>
+    <title>Book details</title>
     <link rel="stylesheet" href="styles/stile_libro.css">
 </head>
 <body>
 
+<div id="progress-container">
+    <div class="progress-bar-bg">
+        <div id="pb-fill" class="progress-bar-fill"></div>
+    </div>
+    <div id="pb-text" class="progress-text">0%</div>
+    <p style="color: #888; margin-top: 10px;">Salvataggio dei dati in corso...</p>
+</div>
+
+<div id="loader-overlay">
+    <div class="spinner"></div>
+    <div class="loader-text">Downloading...</div>
+    <p style="color: #888; font-size: 0.9em;">Please wait, we are downloading the author and cover data</p>
+</div>
 <div class="user-menu">
 
     <?php if (isset($_SESSION['user_id'])): ?>
 
-        <a href="profilo.php" class="btn-menu btn-blue">Profilo</a>
+        <a href="profilo.php" class="btn-menu btn-blue">Profile</a>
         <a href="logout.php" class="btn-menu btn-red-dark">Logout</a>
 
     <?php else: ?>
 
-        <a href="login.php" class="btn-menu btn-blue">Accedi</a>
-        <a href="register.php" class="btn-menu btn-green-reg">Registrati</a>
+        <a href="login.php" class="btn-menu btn-blue">Log in</a>
+        <a href="register.php" class="btn-menu btn-green-reg">Register</a>
 
     <?php endif; ?>
 
@@ -35,7 +48,7 @@ if (!isset($pdo)) {
 $bookId = $_GET['id'] ?? null;
 $iaId = $_GET['ia'] ?? null;
 
-if (!$bookId) die("ID libro mancante.");
+if (!$bookId) die("Book ID missing");
 
 $apiUrl = "https://openlibrary.org/works/{$bookId}.json";
 $ch = curl_init();
@@ -46,8 +59,8 @@ $response = curl_exec($ch);
 $book = json_decode($response, true);
 curl_close($ch);
 
-$title = $book['title'] ?? 'Titolo Sconosciuto';
-$description = "Descrizione non disponibile.";
+$title = $book['title'] ?? 'Title non known';
+$description = "Description not available";
 if (isset($book['description'])) {
     $description = is_array($book['description']) ? $book['description']['value'] : $book['description'];
 }
@@ -135,7 +148,7 @@ try {
         $db_book_id = $existingBook['id'];
     }
 } catch (PDOException $e) {
-    die("Errore salvataggio libro: " . $e->getMessage());
+    die("Error during downloading: " . $e->getMessage());
 }
 
 if (isset($_POST['invia_recensione']) && isset($_SESSION['user_id'])) {
@@ -177,7 +190,7 @@ if (isset($_SESSION['user_id'])) {
 }
 ?>
 
-<a href="javascript:history.back()" class="back-link">← Torna alla pagina precedente</a>
+<a href="javascript:history.back()" class="back-link">← Return to the previous page</a>
 
 <div class="details-wrapper">
 
@@ -203,8 +216,8 @@ if (isset($_SESSION['user_id'])) {
                         'id_formato' => $formato['id'] ?? null   // 👈 IMPORTANTE
                 ]);
                 ?>
-                <a href='download.php?<?php echo $downloadParams; ?>'><button class="btn-action btn-red">Scarica PDF</button></a>
-                <a href='reader.php?file=<?php echo urlencode($pdfUrl); ?>&title=<?php echo urlencode($title); ?>' target='_blank'><button class="btn-action btn-cyan">Leggi Online</button></a>
+                <a href='download.php?<?php echo $downloadParams; ?>'><button class="btn-action btn-red">Download PDF</button></a>
+                <a href='reader.php?file=<?php echo urlencode($pdfUrl); ?>&title=<?php echo urlencode($title); ?>' target='_blank'><button class="btn-action btn-cyan">Read Online</button></a>
             </div>
         <?php endif; ?>
 
@@ -213,14 +226,14 @@ if (isset($_SESSION['user_id'])) {
                 <form action="salva_in_col.php" method="POST">
                     <input type="hidden" name="book_id" value="<?php echo htmlspecialchars($bookId); ?>">
                     <input type="hidden" name="db_book_id" value="<?php echo $db_book_id; ?>">
-                    <label class="collection-label">Aggiungi a una collezione:</label>
+                    <label class="collection-label">Add to a collection:</label>
                     <div class="select-wrapper">
                         <select name="collection_id" class="select-dark">
                             <?php foreach ($collezioni as $col): ?>
                                 <option value="<?php echo $col['id']; ?>"><?php echo htmlspecialchars($col['nome']); ?></option>
                             <?php endforeach; ?>
                         </select>
-                        <button type="submit" class="btn-save">Salva</button>
+                        <button type="submit" class="btn-save">Save</button>
                     </div>
                 </form>
             </div>
@@ -229,11 +242,11 @@ if (isset($_SESSION['user_id'])) {
 
     <div class="main-content">
         <h1><?php echo htmlspecialchars($title); ?></h1>
-        <h3>Descrizione:</h3>
+        <h3>Description:</h3>
         <p class="description-text"><?php echo nl2br(htmlspecialchars($description)); ?></p>
 
         <?php if (isset($book['subjects'])): ?>
-            <h3>Soggetti:</h3>
+            <h3>Subjects:</h3>
             <?php foreach (array_slice($book['subjects'], 0, 12) as $subject): ?>
                 <span class="tag"><?php echo htmlspecialchars($subject); ?></span>
             <?php endforeach; ?>
@@ -253,12 +266,12 @@ if (isset($_SESSION['user_id'])) {
     if (!$recensito) :
         ?>
 
-        <h3>Scrivi una recensione</h3>
+        <h3>Write a review</h3>
 
         <form method="POST">
-            <label>Valutazione:</label>
+            <label>Rating:</label>
             <select name="rating" required>
-                <option value="">-- Voto --</option>
+                <option value="">-- Vote --</option>
                 <option value="1">⭐</option>
                 <option value="2">⭐⭐</option>
                 <option value="3">⭐⭐⭐</option>
@@ -266,20 +279,20 @@ if (isset($_SESSION['user_id'])) {
                 <option value="5">⭐⭐⭐⭐⭐</option>
             </select>
             <br><br>
-            <textarea name="commento" placeholder="Scrivi la tua recensione..." rows="4" cols="50"></textarea>
+            <textarea name="commento" placeholder="Write your review..." rows="4" cols="50"></textarea>
             <br><br>
-            <button type="submit" name="invia_recensione">Pubblica</button>
+            <button type="submit" name="invia_recensione">Publish</button>
         </form>
 
     <?php else: ?>
-        <p><b>Hai già recensito questo libro.</b></p>
+        <p><b>You have already reviewed this book</b></p>
     <?php endif; ?>
 <?php else: ?>
-    <p><b>Effettua il login per scrivere una recensione.</b></p>
+    <p><b>Log in to write a review</b></p>
 <?php endif; ?>
 
 <hr>
-<h3>Recensioni</h3>
+<h3>Reviews</h3>
 
 <?php
 $stmtRec = $pdo->prepare("
@@ -303,13 +316,13 @@ if ($recensioni):
             <br>
             <?= nl2br(htmlspecialchars($rec['commento'])) ?>
             <br>
-            <form action="del_rec.php" method="POST" class="delete-form" onsubmit="return confirm('Sei sicuro?');">
+            <form action="del_rec.php" method="POST" class="delete-form" onsubmit="return confirm('Are you sure?');">
                 <input type="hidden" name="id_rec" value="<?php echo $rec['id']; ?>">
                 <input type="hidden" name="id_rec_libro" value="<?php echo $rec['id_libro']; ?>">
                 <input type="hidden" name="id_ia" value="<?php echo $rec['ia_id']; ?>">
                 <input type="hidden" name="id_oid" value="<?php echo $rec['open_library_id']; ?>">
                 <small><button type="submit" class="link-delete" onclick="event.stopPropagation();">
-                    Elimina
+                    Eliminate
                 </button> </small> <br>
             </form>
             <small><?= $rec['data_rec'] ?></small>
@@ -317,7 +330,7 @@ if ($recensioni):
     <?php
     endforeach;
 else:
-    echo "<p>Nessuna recensione ancora.</p>";
+    echo "<p>No reviews yet</p>";
 endif;
 ?>
 

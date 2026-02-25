@@ -7,7 +7,7 @@ if (!isset($pdo)) {
 }
 
 if (!isset($_SESSION['user_id'])) {
-    die("Errore: Devi effettuare il login per salvare i libri.");
+    die("Error: You must log in to save books");
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $ia_id = ($row) ? $row['ia_id'] : '';
 
     if (!$db_book_id || !$collection_id) {
-        die("Errore: Dati mancanti per il salvataggio.");
+        die("Error: Missing data to save");
     }
 
     try {
@@ -37,6 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     } catch (Exception $e) {
         $pdo->rollBack();
-        die("Errore critico durante il salvataggio in collezione: " . $e->getMessage());
+        die("Critical error while saving to collection: " . $e->getMessage());
     }
 }

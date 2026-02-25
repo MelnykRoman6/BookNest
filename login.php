@@ -2,9 +2,7 @@
 session_start();
 require_once 'db.php';
 
-if (isset($pdo)) {
-    //echo "Connessione OK";
-} else {
+if (!isset($pdo)) {
     die("Errore: la variabile \$pdo non è definita in db.php");
 }
 
@@ -23,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: index.php");
         exit;
     } else {
-        $error = "Email o password sbagliati!";
+        $error = "Incorrect email or password!";
     }
 }
 ?>
@@ -46,15 +44,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <?php endif; ?>
 
         <label>Email:</label>
-        <input type="email" name="email" required placeholder="Inserisci la tua email">
+        <input type="email" name="email" required placeholder="Enter your email">
 
         <label>Password:</label>
-        <input type="password" name="password" required placeholder="Inserisci la password">
+        <input type="password" name="password" required placeholder="Enter your password">
 
-        <button type="submit" class="btn-auth">Accedi</button>
+        <button type="submit" class="btn-auth">Log in</button>
 
         <div class="auth-footer">
-            <p>Non hai un account? <a href="register.php">Registrati</a></p>
+            <p>Don't have an account? <a href="register.php">Register</a></p>
         </div>
     </form>
 </div>

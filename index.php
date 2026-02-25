@@ -11,17 +11,17 @@ if (!isset($pdo)) {
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="styles/stile_index.css">
-    <title>BookNest - Home</title>
+    <title>BookNest - Catalog</title>
 </head>
 <body>
 
 <div class="user-menu">
     <?php if (isset($_SESSION['user_id'])): ?>
-        <a href="profilo.php" class="btn btn-primary">Profilo</a>
+        <a href="profilo.php" class="btn btn-primary">Profile</a>
         <a href="logout.php" class="btn btn-danger">Logout</a>
     <?php else: ?>
-        <a href="login.php" class="btn btn-primary">Accedi</a>
-        <a href="register.php" class="btn btn-success">Registrati</a>
+        <a href="login.php" class="btn btn-primary">Log in</a>
+        <a href="register.php" class="btn btn-success">Register</a>
     <?php endif; ?>
 </div>
 
@@ -30,7 +30,7 @@ if (!isset($pdo)) {
 <form method="GET" class="search-form">
     <input type="text"
            name="search"
-           placeholder="Cerca..."
+           placeholder="Search..."
            value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
 
     <?php
@@ -39,7 +39,7 @@ if (!isset($pdo)) {
         $autori = $pdo->query("SELECT id, nome FROM Autore ORDER BY nome ASC")->fetchAll();
         ?>
         <select name="autore">
-            <option value="">-- Autore --</option>
+            <option value="">-- Author --</option>
             <?php foreach ($autori as $a): ?>
                 <option value="<?= $a['id'] ?>"
                         <?php if (isset($_GET['autore']) && $_GET['autore'] == $a['id']) echo "selected"; ?>>
@@ -55,7 +55,7 @@ if (!isset($pdo)) {
         $generi = $pdo->query("SELECT id, nome FROM Genere ORDER BY nome ASC")->fetchAll();
         ?>
         <select name="genere">
-            <option value="">-- Genere --</option>
+            <option value="">-- Genre --</option>
             <?php foreach ($generi as $g): ?>
                 <option value="<?= $g['id'] ?>"
                         <?php if (isset($_GET['genere']) && $_GET['genere'] == $g['id']) echo "selected"; ?>>
@@ -65,7 +65,7 @@ if (!isset($pdo)) {
         </select>
     <?php endif; ?>
 
-    <button type="submit">Cerca</button>
+    <button type="submit">Search</button>
 </form>
 
 <br><hr><br>
@@ -105,7 +105,8 @@ if ($titolo !== '' || $autore !== '' || $genere !== '') {
         SELECT 
             l.*,
             AVG(r.rating) as media_rating,
-            COUNT(r.id) as totale_recensioni
+            COALESCE((SELECT count(*) FROM recensione r1 WHERE r1.id_libro = l.id), 0) as totale_recensioni,
+            a.nome
         FROM Libro l
         LEFT JOIN Scrivere s ON l.id = s.id_libro
         LEFT JOIN Autore a ON s.id_autore = a.id
@@ -153,7 +154,7 @@ if ($titolo !== '' || $autore !== '' || $genere !== '') {
 
 // mostra risultati DB
 if (!empty($libri_db)) {
-    echo "<h3>Risultati dal Database</h3>";
+    echo "<h3>Results from Database</h3>";
 
     foreach ($libri_db as $libro) {
         $media = $libro['media_rating'];
@@ -162,7 +163,7 @@ if (!empty($libri_db)) {
 
         $stmtAut = $pdo->prepare("SELECT a.nome FROM Autore a JOIN Scrivere s ON a.id = s.id_autore WHERE s.id_libro = ? LIMIT 1");
         $stmtAut->execute([$libro['id']]);
-        $autoreNome = $stmtAut->fetchColumn() ?? "Sconosciuto";
+        $autoreNome = $stmtAut->fetchColumn() ?? "Not known";
 
         $coverUrl = !empty($libro['cover_id'])
                 ? "https://covers.openlibrary.org/b/id/" . $libro['cover_id'] . "-M.jpg"
@@ -177,13 +178,13 @@ if (!empty($libri_db)) {
         echo "<a href='libro.php?id=" . $libro['open_library_id'] . "&ia=" . $libro['ia_id'] . "' class='book-title'>";
         echo "<strong>" . htmlspecialchars($libro['titolo']) . "</strong>";
         echo "</a>";
-        echo "<span class='book-author'>Autore: " . htmlspecialchars($autoreNome) . "</span>";
+        echo "<span class='book-author'>Author: " . htmlspecialchars($autoreNome) . "</span>";
         echo "</div>";
 
         if ($totaleRec > 0) {
             echo "<div class='rating-box'>";
             echo "<div class='stars'>$stelle</div>";
-            $testoRecensioni = ($totaleRec == 1) ? "recensione" : "recensioni";
+            $testoRecensioni = ($totaleRec == 1) ? "review" : "reviews";
             echo "<div class='rating-info'>" . round($media, 1) . " / 5<br>" . $totaleRec . " " . $testoRecensioni . "</div>";
             echo "</div>";
         }
@@ -191,9 +192,9 @@ if (!empty($libri_db)) {
     }
 }
 
-// se не trova usa API
+// se non trova usa API
 if ($titolo !== '') {
-    echo "<h3>Risultati da OpenLibrary</h3>";
+    echo "<h3>Results from OpenLibrary</h3>";
     $url = "https://openlibrary.org/search.json?q=" . urlencode($titolo) . "&limit=10";
     $response = @file_get_contents($url);
 
@@ -206,8 +207,8 @@ if ($titolo !== '') {
                 $bookKey = str_replace('/works/', '', $book['key']);
                 if (in_array($bookKey, $idsPresenti)) continue;
 
-                $titleApi = $book['title'] ?? 'Senza titolo';
-                $authorApi = $book['author_name'][0] ?? 'Sconosciuto';
+                $titleApi = $book['title'] ?? 'No title';
+                $authorApi = $book['author_name'][0] ?? 'Not known';
                 $coverId = $book['cover_i'] ?? null;
                 $iaId = $book['ia'][0] ?? null;
                 $image = $coverId ? "https://covers.openlibrary.org/b/id/{$coverId}-M.jpg" : "https://via.placeholder.com/100x150?text=No+Cover";
@@ -216,15 +217,15 @@ if ($titolo !== '') {
                 echo "<a href='libro.php?id=$bookKey&ia=$iaId'><img src='$image' class='book-cover'></a>";
                 echo "<div class='book-details'>";
                 echo "<a href='libro.php?id=$bookKey&ia=$iaId' class='book-title'><strong>" . htmlspecialchars($titleApi) . "</strong></a>";
-                echo "<span class='book-author'>Autore: " . htmlspecialchars($authorApi) . "</span>";
+                echo "<span class='book-author'>Author: " . htmlspecialchars($authorApi) . "</span>";
                 echo "</div>";
                 echo "</div>";
             }
         } else {
-            echo "<p>Nessun risultato trovato.</p>";
+            echo "<p>No results found</p>";
         }
     } else {
-        echo "<p>Errore nella chiamata API.</p>";
+        echo "<p>Error in API call</p>";
     }
 }
 ?>

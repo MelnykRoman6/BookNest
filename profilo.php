@@ -54,7 +54,7 @@ try {
     $downloadHistory = $stmtDownload->fetchAll();
 
 } catch (PDOException $e) {
-    die("Errore nel recupero dati: " . $e->getMessage());
+    die("Data recovery error: " . $e->getMessage());
 }
 ?>
 
@@ -62,26 +62,26 @@ try {
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Profilo - BookNest</title>
+    <title>Profile - BookNest</title>
     <link rel="stylesheet" href="styles/stile_profilo.css">
 </head>
 <body>
 
 <div class="container">
-    <a href="index.php" class="back-link">← Torna alla Ricerca</a>
+    <a href="index.php" class="back-link">← Back to search</a>
 
     <div class="section">
-        <h2>Il Mio Profilo</h2>
+        <h2>My profile</h2>
         <div class="info-box">
             <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
-            <p><strong>Membro dal:</strong> <?php echo date("d/m/Y", strtotime($user['data_reg'])); ?></p>
+            <p><strong>Member from:</strong> <?php echo date("d/m/Y", strtotime($user['data_reg'])); ?></p>
         </div>
     </div>
 
     <div class="section">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3>Le Mie Collezioni</h3>
-            <a href="nuova_col.php" class="btn-create">+ Nuova Collezione</a>
+            <h3>My collections</h3>
+            <a href="nuova_col.php" class="btn-create">+ New collection</a>
         </div>
 
         <?php if ($collezioni): ?>
@@ -91,26 +91,26 @@ try {
                     <div class="list-item collapsible-header" onclick="toggleCollection(<?php echo $col['id']; ?>)">
                         <div>
                             <strong><?php echo htmlspecialchars($col['nome']); ?></strong><br>
-                            <span class="date">Creato il: <?php echo date("d/m/Y", strtotime($col['data_crea'])); ?></span>
+                            <span class="date">Created at: <?php echo date("d/m/Y", strtotime($col['data_crea'])); ?></span>
                         </div>
 
                         <div class="actions-wrapper">
                             <div class="badge-count">
-                                <?php echo $col['total_libri']; ?> libri
+                                <?php echo $col['total_libri']; ?> books
                             </div>
 
                             <div class="buttons-stack">
                                 <form action="modifica_col.php" method="GET" style="margin: 0;">
                                     <input type="hidden" name="id" value="<?php echo $col['id']; ?>">
                                     <button type="submit" class="btn-manage btn-green" onclick="event.stopPropagation();">
-                                        Modifica
+                                        Modify
                                     </button>
                                 </form>
 
-                                <form action="del_col.php" method="POST" style="margin: 0;" onsubmit="return confirm('Eliminare la collezione?');">
+                                <form action="del_col.php" method="POST" style="margin: 0;" onsubmit="return confirm('Delete the collection?');">
                                     <input type="hidden" name="id_collezione" value="<?php echo $col['id']; ?>">
                                     <button type="submit" class="btn-manage btn-red" onclick="event.stopPropagation();">
-                                        Elimina
+                                        Eliminate
                                     </button>
                                 </form>
                             </div>
@@ -130,22 +130,22 @@ try {
                                     <a href="libro.php?id=<?php echo $ol_ids[$i]; ?>&ia=<?php echo $ia_ids[$i]; ?>" class="book-link">
                                         <?php echo htmlspecialchars($titoli[$i]); ?>
                                     </a>
-                                    <span class="date">PDF Disponibile</span>
+                                    <span class="date">PDF available</span>
                                 </div>
                             <?php endfor; ?>
                         <?php else: ?>
-                            <p style="color: #777; font-size: 0.9em;">Nessun libro in questa collezione.</p>
+                            <p style="color: #777; font-size: 0.9em;">No books in this collection</p>
                         <?php endif; ?>
                     </div>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
-            <p>Non hai ancora creato nessuna collezione.</p>
+            <p>You haven't created any collections yet</p>
         <?php endif; ?>
     </div>
 
     <div class="section">
-        <h3>Cronologia delle ricerche</h3>
+        <h3>Search history</h3>
         <?php if ($cronologia): ?>
             <?php foreach ($cronologia as $item): ?>
                 <div class="list-item">
@@ -154,12 +154,12 @@ try {
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
-            <p>La tua cronologia è vuota.</p>
+            <p>Your history is empty</p>
         <?php endif; ?>
     </div>
 
     <div class="section">
-        <h3>Cronologia Download</h3>
+        <h3>Download history</h3>
         <?php if ($downloadHistory): ?>
             <?php foreach ($downloadHistory as $dl): ?>
                 <div class="list-item">
@@ -172,7 +172,7 @@ try {
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
-            <p>Non hai ancora scaricato nessun libro.</p>
+            <p>You haven't downloaded any books yet</p>
         <?php endif; ?>
     </div>
 
@@ -184,7 +184,6 @@ try {
         if (content.style.display === "block") {
             content.style.display = "none";
         } else {
-            // Сначала закрываем все остальные (аккордеон)
             document.querySelectorAll('.books-content').forEach(el => el.style.display = 'none');
             content.style.display = "block";
         }

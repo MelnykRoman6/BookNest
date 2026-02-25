@@ -6,10 +6,6 @@ if (!isset($pdo)) {
     die("Errore: la variabile \$pdo non è definita in db.php");
 }
 
-if (!isset($_SESSION['user_id'])) {
-    die("Errore: Devi effettuare il login per creare nuove collezioni.");
-}
-
 $user_id = $_SESSION['user_id'];
 $success = "";
 $error = "";

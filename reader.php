@@ -1,9 +1,9 @@
 <?php
 $fileUrl = $_GET['file'] ?? '';
-$title = $_GET['title'] ?? 'Lettura PDF';
+$title = $_GET['title'] ?? 'PDF Reading';
 
 if (empty($fileUrl)) {
-    die("Errore: URL del file mancante.");
+    die("Error: File URL missing");
 }
 ?>
 <!DOCTYPE html>
@@ -51,13 +51,13 @@ if (empty($fileUrl)) {
 
 <div class="header">
     <span><?php echo htmlspecialchars($title); ?></span>
-    <a href="javascript:window.close();">Chiudi Lettore ✕</a>
+    <a href="javascript:window.close();">Close reader ✕</a>
 </div>
 
 <div class="pdf-container">
     <iframe src="<?php echo htmlspecialchars($fileUrl); ?>#toolbar=1" type="application/pdf">
-        <p>Il tuo browser non supporta la visualizzazione dei PDF.
-            <a href="<?php echo htmlspecialchars($fileUrl); ?>">Clicca qui per scaricarlo.</a>
+        <p>Your browser does not support viewing PDFs
+            <a href="<?php echo htmlspecialchars($fileUrl); ?>">Click here to download</a>
         </p>
     </iframe>
 </div>

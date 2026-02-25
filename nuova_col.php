@@ -7,7 +7,7 @@ if (!isset($pdo)) {
 }
 
 if (!isset($_SESSION['user_id'])) {
-    die("Errore: Devi effettuare il login per creare nuove collezioni.");
+    die("Error: You must log in to create new collections.");
 }
 
 $user_id = $_SESSION['user_id'];
@@ -18,21 +18,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nome = trim($_POST['nome'] ?? '');
 
     if (empty($nome)) {
-        $error = "Il nome della collezione non può essere vuoto.";
+        $error = "The collection name cannot be empty";
     } elseif (strlen($nome) > 255) {
-        $error = "Il nome è troppo lungo (max 255 caratteri).";
+        $error = "The name is too long (max 255 characters)";
     } else {
         //per controllare se esiste già una collezione con lo stesso nome per l'utente
         $stmtCheck = $pdo->prepare("SELECT id FROM collezione WHERE id_utente = ? AND nome = ?");
         $stmtCheck->execute([$user_id, $nome]);
 
         if ($stmtCheck->fetch()) {
-            $error = "Hai già una collezione con questo nome.";
+            $error = "You already have a collection with this name";
         } else {
             $stmt = $pdo->prepare("INSERT INTO collezione (id_utente, nome) VALUES (?, ?)");
             $stmt->execute([$user_id, $nome]);
 
-            $success = "Collezione creata con successo!";
+            $success = "Collection created successfully!";
         }
     }
 }
@@ -42,14 +42,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Nuova Collezione</title>
+    <title>New collection</title>
     <link rel="stylesheet" href="styles/stile_nuova_col.css">
 </head>
 <body>
 
 <div class="box">
-    <a href="profilo.php" style="text-decoration:none;">← Torna al Profilo</a>
-    <h2>Crea Nuova Collezione</h2>
+    <a href="profilo.php" style="text-decoration:none;">← Return to profile</a>
+    <h2>Create new collection</h2>
 
     <?php if ($error): ?>
         <div class="error"><?php echo htmlspecialchars($error); ?></div>
@@ -60,9 +60,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <?php endif; ?>
 
     <form method="POST">
-        <label>Nome Collezione:</label>
-        <input type="text" name="nome" placeholder="Es. Fantascienza 2024" required>
-        <button type="submit">Crea</button>
+        <label>Collection name:</label>
+        <input type="text" name="nome" placeholder="Ex. Science Fiction 2024" required>
+        <button type="submit">Create</button>
     </form>
 </div>
 

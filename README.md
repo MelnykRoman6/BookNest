@@ -13,6 +13,6 @@
 
 
 ## Schema entità-relazionale
-![WhatsApp Image 2026-02-13 at 16 52 01](https://github.com/user-attachments/assets/a979bfea-8299-409e-ba13-e9da092957e6)
+<img width="851" height="775" alt="BookNest drawio" src="https://github.com/user-attachments/assets/d7df1689-400f-436d-974d-0851a957441f" />
 
 

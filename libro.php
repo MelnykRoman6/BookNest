@@ -106,7 +106,7 @@ try {
                     $author_id = $pdo->lastInsertId();
                 }
 
-                //relazione Scrivere
+                //relazione Scrivere (se ci sono duplicati, ignora l’inserimento senza generare errore)
                 $stmtRel = $pdo->prepare("INSERT IGNORE INTO Scrivere (id_libro, id_autore) VALUES (?, ?)");
                 $stmtRel->execute([$db_book_id, $author_id]);
             }
@@ -213,7 +213,7 @@ if (isset($_SESSION['user_id'])) {
                 $downloadParams = http_build_query([
                         'file_url' => $pdfUrl,
                         'file_name' => $title,
-                        'id_formato' => $formato['id'] ?? null   // 👈 IMPORTANTE
+                        'id_formato' => $formato['id'] ?? null
                 ]);
                 ?>
                 <a href='download.php?<?php echo $downloadParams; ?>'><button class="btn-action btn-red">Download PDF</button></a>

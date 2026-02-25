@@ -84,6 +84,7 @@ try {
             <a href="nuova_col.php" class="btn-create">+ New collection</a>
         </div>
 
+        <!-- se ci sono collezioni -->
         <?php if ($collezioni): ?>
             <?php foreach ($collezioni as $col): ?>
                 <div style="margin-bottom: 15px; border: 1px solid #444; border-radius: 8px; overflow: hidden;">
@@ -102,7 +103,7 @@ try {
                             <div class="buttons-stack">
                                 <form action="modifica_col.php" method="GET" style="margin: 0;">
                                     <input type="hidden" name="id" value="<?php echo $col['id']; ?>">
-                                    <button type="submit" class="btn-manage btn-green" onclick="event.stopPropagation();">
+                                    <button type="submit" class="btn-manage btn-green" onclick="event.stopPropagation();"> <!-- evita di aprire/chiudere collezione -->
                                         Modify
                                     </button>
                                 </form>
@@ -120,6 +121,7 @@ try {
                     <div id="col-<?php echo $col['id']; ?>" class="books-content">
                         <?php
                         if ($col['total_libri'] > 0):
+                            //stringa in array
                             $titoli = explode('||', $col['titoli_libri']);
                             $ol_ids = explode('||', $col['ids_libri']);
                             $ia_ids = explode('||', $col['ia_ids_libri']);
@@ -179,9 +181,10 @@ try {
 </div>
 
 <script>
+    //click collezione -> chiusura, o apertura e chiusura altre
     function toggleCollection(id) {
         const content = document.getElementById('col-' + id);
-        if (content.style.display === "block") {
+        if (content.style.display == "block") {
             content.style.display = "none";
         } else {
             document.querySelectorAll('.books-content').forEach(el => el.style.display = 'none');

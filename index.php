@@ -76,7 +76,7 @@ $autore = $_GET['autore'] ?? '';
 $genere = $_GET['genere'] ?? '';
 
 // salvataggio in cronologia
-if (isset($_SESSION['user_id']) && $titolo !== '') {
+if (isset($_SESSION['user_id']) && $titolo != '') {
     $stmtCheck = $pdo->prepare("
         SELECT id FROM cronologia
         WHERE id_utente = ?
@@ -105,7 +105,7 @@ if ($titolo !== '' || $autore !== '' || $genere !== '') {
         SELECT 
             l.*,
             AVG(r.rating) as media_rating,
-            COALESCE((SELECT count(*) FROM recensione r1 WHERE r1.id_libro = l.id), 0) as totale_recensioni,
+            (SELECT count(*) FROM recensione r1 WHERE r1.id_libro = l.id) as totale_recensioni,
             a.nome
         FROM Libro l
         LEFT JOIN Scrivere s ON l.id = s.id_libro
@@ -130,7 +130,7 @@ if ($titolo !== '' || $autore !== '' || $genere !== '') {
             SELECT 
                 l.*,
                 AVG(r.rating) as media_rating,
-                COALESCE((SELECT count(*) FROM recensione r1 WHERE r1.id_libro = l.id), 0) as totale_recensioni,
+                (SELECT count(*) FROM recensione r1 WHERE r1.id_libro = l.id) as totale_recensioni,
                 a.nome
             FROM Libro l
             LEFT JOIN Scrivere s ON l.id = s.id_libro
@@ -198,7 +198,7 @@ if ($titolo !== '') {
     $url = "https://openlibrary.org/search.json?q=" . urlencode($titolo) . "&limit=10";
     $response = @file_get_contents($url);
 
-    if ($response !== false) {
+    if ($response) {
         $data = json_decode($response, true);
         if (!empty($data['docs'])) {
             $idsPresenti = array_column($libri_db, 'open_library_id');

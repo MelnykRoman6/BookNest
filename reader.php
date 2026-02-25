@@ -74,7 +74,7 @@ if ($id_utente) {
     <title><?= htmlspecialchars($title) ?></title>
     <link rel="stylesheet" href="styles/stile_reader.css">
 
-    <!-- PDF.js -->
+    <!-- PDF.js (libreria di JS per visualizzare PDF nel browser) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc =

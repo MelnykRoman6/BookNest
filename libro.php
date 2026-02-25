@@ -283,9 +283,10 @@ if (isset($_SESSION['user_id'])) {
 
 <?php
 $stmtRec = $pdo->prepare("
-    SELECT r.*, u.email
+    SELECT r.*, u.email, l.open_library_id, l.ia_id
     FROM recensione r
     JOIN utente u ON r.id_utente = u.id
+    INNER join libro l on l.id = r.id_libro
     WHERE r.id_libro = ?
     ORDER BY r.data_rec DESC
 ");
@@ -299,9 +300,19 @@ if ($recensioni):
         <div class="review-card">
             <strong><?= htmlspecialchars($rec['email']) ?></strong>
             — <?= str_repeat("⭐", $rec['rating']) ?>
-            <br><br>
+            <br>
             <?= nl2br(htmlspecialchars($rec['commento'])) ?>
-            <br><small><?= $rec['data_rec'] ?></small>
+            <br>
+            <form action="del_rec.php" method="POST" class="delete-form" onsubmit="return confirm('Sei sicuro?');">
+                <input type="hidden" name="id_rec" value="<?php echo $rec['id']; ?>">
+                <input type="hidden" name="id_rec_libro" value="<?php echo $rec['id_libro']; ?>">
+                <input type="hidden" name="id_ia" value="<?php echo $rec['ia_id']; ?>">
+                <input type="hidden" name="id_oid" value="<?php echo $rec['open_library_id']; ?>">
+                <small><button type="submit" class="link-delete" onclick="event.stopPropagation();">
+                    Elimina
+                </button> </small> <br>
+            </form>
+            <small><?= $rec['data_rec'] ?></small>
         </div>
     <?php
     endforeach;

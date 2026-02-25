@@ -107,6 +107,28 @@ body {
     cursor: pointer;
 }
 
+.link-delete {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #888;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.link-delete:hover {
+    color: #ff4d4d;
+    text-decoration: underline;
+}
+
+.delete-form {
+    display: inline;
+    margin-left: 10px;
+}
+
 .main-content {
     flex: 1;
 }

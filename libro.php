@@ -217,7 +217,7 @@ if (isset($_SESSION['user_id'])) {
                 ]);
                 ?>
                 <a href='download.php?<?php echo $downloadParams; ?>'><button class="btn-action btn-red">Download PDF</button></a>
-                <a href='reader.php?file=<?php echo urlencode($pdfUrl); ?>&title=<?php echo urlencode($title); ?>' target='_blank'><button class="btn-action btn-cyan">Read Online</button></a>
+                <a href='reader.php?file=<?php echo urlencode($pdfUrl); ?>&title=<?php echo urlencode($title); ?>&id_libro=<?php echo $db_book_id; ?>' target='_blank'><button class="btn-action btn-cyan">Read Online</button></a>
             </div>
         <?php endif; ?>
 
@@ -298,8 +298,8 @@ if (isset($_SESSION['user_id'])) {
 $stmtRec = $pdo->prepare("
     SELECT r.*, u.email, l.open_library_id, l.ia_id
     FROM recensione r
-    JOIN utente u ON r.id_utente = u.id
-    INNER join libro l on l.id = r.id_libro
+    INNER JOIN utente u ON r.id_utente = u.id
+    INNER JOIN libro l on l.id = r.id_libro
     WHERE r.id_libro = ?
     ORDER BY r.data_rec DESC
 ");

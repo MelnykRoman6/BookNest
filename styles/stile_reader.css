@@ -1,0 +1,41 @@
+body {
+    margin: 0;
+    background: #1e1e1e;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+h2 {
+    margin-top: 20px;
+}
+
+canvas {
+    margin-top: 20px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.6);
+}
+
+.page-info {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #ccc;
+}
+
+.controls {
+    margin-top: 25px;
+    margin-bottom: 40px;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #444;
+    color: white;
+}
+
+button:hover {
+    background-color: #666;
+}

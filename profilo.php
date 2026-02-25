@@ -44,8 +44,8 @@ try {
     $stmtDownload = $pdo->prepare("
         SELECT l.titolo, f.tipo, d.data_download
         FROM Download d
-        JOIN Formato f ON d.id_formato = f.id
-        JOIN Libro l ON f.id_libro = l.id
+        INNER JOIN Formato f ON d.id_formato = f.id
+        INNER JOIN Libro l ON f.id_libro = l.id
         WHERE d.id_utente = ?
         ORDER BY d.data_download DESC
         LIMIT 20

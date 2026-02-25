@@ -1,66 +1,118 @@
 <?php
+session_start();
+require_once 'db.php';
+
 $fileUrl = $_GET['file'] ?? '';
 $title = $_GET['title'] ?? 'PDF Reading';
+$id_libro = $_GET['id_libro'] ?? null;
+$id_utente = $_SESSION['user_id'] ?? null;
 
-if (empty($fileUrl)) {
-    die("Error: File URL missing");
+if (!isset($pdo)) {
+    die("Errore: la variabile \$pdo non è definita in db.php");
+}
+if (!$fileUrl || !$id_libro) {
+    die("Dati mancanti.");
+}
+
+//salvataggio progresso
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && $id_utente) {
+    $pagina = $_POST['pagina'] ?? 1;
+    $id_libro_post = $_POST['id_libro'] ?? null;
+
+    if (!$id_libro_post) {
+        die("Libro mancante.");
+    }
+
+    $stmt = $pdo->prepare("
+        SELECT id FROM salvare
+        WHERE id_libro = ? AND id_utente = ?
+    ");
+    $stmt->execute([$id_libro_post, $id_utente]);
+
+    if ($stmt->fetch()) {
+        $update = $pdo->prepare("
+            UPDATE salvare
+            SET progresso = ?
+            WHERE id_libro = ? AND id_utente = ?
+        ");
+
+        $update->execute([$pagina, $id_libro_post, $id_utente]);
+    } else {
+        $insert = $pdo->prepare("
+            INSERT INTO salvare (id_libro, id_utente, progresso)
+            VALUES (?, ?, ?)
+        ");
+
+        $insert->execute([$id_libro_post, $id_utente, $pagina]);
+    }
+
+    header("Location: reader.php?file=" . urlencode($_POST['file']) .
+            "&title=" . urlencode($_POST['title']) .
+            "&id_libro=" . $id_libro_post);
+
+    exit;
+}
+
+//recupero progresso
+$pagina_salvata = 1;
+
+if ($id_utente) {
+    $stmt = $pdo->prepare("SELECT progresso FROM salvare WHERE id_libro = ? AND id_utente = ?");
+    $stmt->execute([$id_libro, $id_utente]);
+    $row = $stmt->fetch();
+
+    if ($row && is_numeric($row['progresso'])) {
+        $pagina_salvata = (int)$row['progresso'];
+    }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title><?php echo htmlspecialchars($title); ?> - Reader</title>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-            background-color: #333;
-            font-family: Arial, sans-serif;
-        }
-        .header {
-            height: 50px;
-            background: #222;
-            color: white;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            justify-content: space-between;
-        }
-        .header a {
-            color: #ccc;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        .header a:hover { color: white; }
+    <title><?= htmlspecialchars($title) ?></title>
+    <link rel="stylesheet" href="styles/stile_reader.css">
 
-        .pdf-container {
-            height: calc(100% - 50px);
-            width: 100%;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-    </style>
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+            "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    </script>
+
 </head>
 <body>
 
-<div class="header">
-    <span><?php echo htmlspecialchars($title); ?></span>
-    <a href="javascript:window.close();">Close reader ✕</a>
+<h2><?= htmlspecialchars($title) ?></h2>
+
+<canvas id="pdfCanvas"></canvas>
+
+<div class="page-info" id="pageInfo">
+    Pagina <?= $pagina_salvata ?> / ...
 </div>
 
-<div class="pdf-container">
-    <iframe src="<?php echo htmlspecialchars($fileUrl); ?>#toolbar=1" type="application/pdf">
-        <p>Your browser does not support viewing PDFs
-            <a href="<?php echo htmlspecialchars($fileUrl); ?>">Click here to download</a>
-        </p>
-    </iframe>
+<div class="controls">
+    <form method="POST" id="progressForm">
+        <input type="hidden" name="pagina" id="paginaInput">
+        <input type="hidden" name="id_libro" value="<?= $id_libro ?>">
+        <input type="hidden" name="file" value="<?= htmlspecialchars($fileUrl) ?>">
+        <input type="hidden" name="title" value="<?= htmlspecialchars($title) ?>">
+
+        <button type="button" onclick="prevPage()">⬅ Previous</button>
+        <button type="button" onclick="nextPage()">Next ➡</button>
+        <button type="submit">Save progress</button>
+    </form>
 </div>
+
+<!-- Passare variabili PHP al JS -->
+<script>
+    const pdfUrl = "proxy_pdf.php?url=<?= urlencode($fileUrl) ?>";
+    const savedPage = <?= $pagina_salvata ?>;
+</script>
+
+<!-- JS esterno -->
+<script src="js/reader.js"></script>
 
 </body>
 </html>

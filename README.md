@@ -9,7 +9,8 @@
     
 ## Documentazione
 ## Schema dei casi d'uso
-![WhatsApp Image 2026-02-13 at 16 52 02](https://github.com/user-attachments/assets/28bbfa4c-99c6-4e5e-b58a-bda742f778a1)
+<img width="744" height="701" alt="CasiUsoBookNest" src="https://github.com/user-attachments/assets/d0874cd5-5444-4b74-8d2a-527c2b98a1b3" />
+
 
 
 ## Schema entità-relazionale

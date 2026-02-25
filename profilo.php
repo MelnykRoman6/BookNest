@@ -90,23 +90,30 @@ try {
 
                     <div class="list-item collapsible-header" onclick="toggleCollection(<?php echo $col['id']; ?>)">
                         <div>
-                            <strong><?php echo htmlspecialchars($col['nome']); ?></strong>
-                            <br>
+                            <strong><?php echo htmlspecialchars($col['nome']); ?></strong><br>
                             <span class="date">Creato il: <?php echo date("d/m/Y", strtotime($col['data_crea'])); ?></span>
                         </div>
 
                         <div class="actions-wrapper">
                             <div class="badge-count">
-                                <?php echo $col['total_libri']; ?>
-                                <?php echo ($col['total_libri'] == 1) ? "libro" : "libri"; ?>
+                                <?php echo $col['total_libri']; ?> libri
                             </div>
 
-                            <form action="del_col.php" method="POST" class="delete-form" onsubmit="return confirm('Sei sicuro?');">
-                                <input type="hidden" name="id_collezione" value="<?php echo $col['id']; ?>">
-                                <button type="submit" class="btn-delete" onclick="event.stopPropagation();">
-                                    Elimina
-                                </button>
-                            </form>
+                            <div class="buttons-stack">
+                                <form action="modifica_col.php" method="GET" style="margin: 0;">
+                                    <input type="hidden" name="id" value="<?php echo $col['id']; ?>">
+                                    <button type="submit" class="btn-manage btn-green" onclick="event.stopPropagation();">
+                                        Modifica
+                                    </button>
+                                </form>
+
+                                <form action="del_col.php" method="POST" style="margin: 0;" onsubmit="return confirm('Eliminare la collezione?');">
+                                    <input type="hidden" name="id_collezione" value="<?php echo $col['id']; ?>">
+                                    <button type="submit" class="btn-manage btn-red" onclick="event.stopPropagation();">
+                                        Elimina
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
 

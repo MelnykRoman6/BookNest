@@ -105,8 +105,33 @@ h2, h3 {
 .actions-wrapper {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 20px;
 }
+
+.buttons-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 100px;
+}
+
+.btn-manage {
+    width: 100%;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.8em;
+    color: white;
+    transition: 0.3s;
+}
+
+.btn-green { background-color: #28a745; }
+.btn-green:hover { background-color: #218838; }
+
+.btn-red { background-color: #dc3545; }
+.btn-red:hover { background-color: #c82333; }
 
 .btn-delete {
     background-color: #dc3545 !important;

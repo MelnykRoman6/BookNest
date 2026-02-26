@@ -66,7 +66,6 @@ if ($id_utente) {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -74,42 +73,44 @@ if ($id_utente) {
     <title><?= htmlspecialchars($title) ?></title>
     <link rel="stylesheet" href="styles/stile_reader.css">
 
-    <!-- PDF.js (libreria di JS per visualizzare PDF nel browser) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc =
             "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
     </script>
-
 </head>
 <body>
 
-<h2><?= htmlspecialchars($title) ?></h2>
+<form method="POST" id="progressForm">
+    <div class="top-bar">
+        <p class="page-info" id="pageInfo">
+            Pagina <span id="current_page"><?= $pagina_salvata ?></span> / <span id="total_pages">...</span>
+        </p>
 
-<canvas id="pdfCanvas"></canvas>
-
-<div class="page-info" id="pageInfo">
-    Pagina <?= $pagina_salvata ?> / ...
-</div>
-
-<div class="controls">
-    <form method="POST" id="progressForm">
         <input type="hidden" name="pagina" id="paginaInput">
         <input type="hidden" name="id_libro" value="<?= $id_libro ?>">
         <input type="hidden" name="file" value="<?= htmlspecialchars($fileUrl) ?>">
         <input type="hidden" name="title" value="<?= htmlspecialchars($title) ?>">
 
-        <button type="button" onclick="prevPage()">⬅ Previous</button>
-        <button type="button" onclick="nextPage()">Next ➡</button>
-        <button type="submit">Save progress</button>
-    </form>
-</div>
+        <button type="submit" class="btn-save-progress">Save progress</button>
+    </div>
 
-<!-- Passare variabili PHP al JS -->
+    <div class="viewer-container">
+        <button type="button" class="side-btn" onclick="prevPage()">&#8592;</button>
+
+        <canvas id="pdfCanvas"></canvas>
+
+        <button type="button" class="side-btn" onclick="nextPage()">&#8594;</button>
+    </div>
+</form>
+
 <script>
     const pdfUrl = "proxy_pdf.php?url=<?= urlencode($fileUrl) ?>";
     const savedPage = <?= $pagina_salvata ?>;
 </script>
+
+</body>
+</html>
 
 <!-- JS esterno -->
 <script src="js/reader.js"></script>

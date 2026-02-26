@@ -114,6 +114,19 @@ h2, h3 {
     gap: 5px;
     min-width: 100px;
 }
+.link-delete {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #888;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.link-delete:hover {
+    color: #ff4d4d;
+    text-decoration: underline;
+}
 
 .btn-manage {
     width: 100%;

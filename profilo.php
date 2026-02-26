@@ -26,7 +26,8 @@ try {
             COUNT(a.id_libro) AS total_libri,
             GROUP_CONCAT(l.titolo SEPARATOR '||') as titoli_libri,
             GROUP_CONCAT(l.open_library_id SEPARATOR '||') as ids_libri,
-            GROUP_CONCAT(l.ia_id SEPARATOR '||') as ia_ids_libri
+            GROUP_CONCAT(l.ia_id SEPARATOR '||') as ia_ids_libri,
+            GROUP_CONCAT(l.id SEPARATOR '||') as db_ids_libri
         FROM collezione c
         LEFT JOIN aggiungere a ON c.id = a.id_collezione
         LEFT JOIN libro l ON l.id = a.id_libro
@@ -121,10 +122,10 @@ try {
                     <div id="col-<?php echo $col['id']; ?>" class="books-content">
                         <?php
                         if ($col['total_libri'] > 0):
-                            //stringa in array
                             $titoli = explode('||', $col['titoli_libri']);
                             $ol_ids = explode('||', $col['ids_libri']);
                             $ia_ids = explode('||', $col['ia_ids_libri']);
+                            $db_ids = explode('||', $col['db_ids_libri']);
 
                             for($i = 0; $i < count($titoli); $i++):
                                 ?>
@@ -132,7 +133,14 @@ try {
                                     <a href="libro.php?id=<?php echo $ol_ids[$i]; ?>&ia=<?php echo $ia_ids[$i]; ?>" class="book-link">
                                         <?php echo htmlspecialchars($titoli[$i]); ?>
                                     </a>
-                                    <span class="date">PDF available</span>
+
+                                    <div style="display: flex; gap: 10px; align-items: center;">
+                                        <form action="del_libro.php" method="POST" style="margin:0;" onsubmit="return confirm('Remove this book from collection?');">
+                                            <input type="hidden" name="id_libro" value="<?php echo $db_ids[$i]; ?>">
+                                            <input type="hidden" name="id_collezione" value="<?php echo $col['id']; ?>">
+                                            <button type="submit" class="link-delete" style="font-size: 0.8em;">Remove</button>
+                                        </form>
+                                    </div>
                                 </div>
                             <?php endfor; ?>
                         <?php else: ?>

@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
 
 <div class="box">
-    <a href="profilo.php" style="text-decoration:none;">← Return to profile</a>
+    <a href="profilo.php">← Return to profile</a>
     <h2>Create new collection</h2>
 
     <?php if ($error): ?>

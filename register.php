@@ -105,16 +105,16 @@ if (isset($_POST['register'])) {
 
     <form method="POST" class="auth-form">
         <label>Email:</label>
-        <div style="display: flex; gap: 8px;">
+        <div class = "email">
             <input type="email" name="email"
                    value="<?php echo $_SESSION['temp_email'] ?? ''; ?>"
                    required placeholder="Email"
-                   style="margin-bottom: 0;"> <button type="submit" name="send_code" class="btn-auth" style="width: auto; padding: 0 15px;">Send</button>
+                   > <button type="submit" name="send_code" class="btn-auth" style="width: auto; padding: 0 15px;">Send</button>
         </div>
-        <?php if(isset($msg)) echo "<div style='color: #17a2b8; font-size: 0.8em; margin-top: 5px;'>$msg</div>"; ?>
+        <?php if(isset($msg)) echo "<div class = 'sent-conf'>$msg</div>"; ?>
     </form>
 
-    <hr style="margin: 20px 0; border: 0; border-top: 1px solid #444;">
+    <hr class = "hr">
 
     <form method="POST" class="auth-form">
         <label>Code received:</label>
@@ -123,7 +123,7 @@ if (isset($_POST['register'])) {
         <label>Select password:</label>
         <input type="password" name="password" placeholder="Password" required>
 
-        <button type="submit" name="register" class="btn-auth" style="background: #28a745;">Crea Account</button>
+        <button type="submit" name="register" class="btn-auth" style="background: #28a745;">Create account</button>
 
         <?php if(isset($error)): ?>
             <div class="error-msg" style="margin-top: 15px;"><?php echo $error; ?></div>

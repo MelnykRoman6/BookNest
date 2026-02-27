@@ -80,7 +80,7 @@ try {
     </div>
 
     <div class="section">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div class="section-heading">
             <h3>My collections</h3>
             <a href="nuova_col.php" class="btn-create">+ New collection</a>
         </div>
@@ -88,8 +88,7 @@ try {
         <!-- se ci sono collezioni -->
         <?php if ($collezioni): ?>
             <?php foreach ($collezioni as $col): ?>
-                <div style="margin-bottom: 15px; border: 1px solid #444; border-radius: 8px; overflow: hidden;">
-
+                <div class="list-col">
                     <div class="list-item collapsible-header" onclick="toggleCollection(<?php echo $col['id']; ?>)">
                         <div>
                             <strong><?php echo htmlspecialchars($col['nome']); ?></strong><br>

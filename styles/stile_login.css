@@ -9,6 +9,15 @@ body {
     margin: 0;
 }
 
+.email {
+    display: flex;
+    gap: 8px;
+}
+
+.email-input {
+    margin-bottom: 0;
+}
+
 .auth-container {
     background: #252525;
     padding: 30px;
@@ -52,9 +61,20 @@ body {
     box-sizing: border-box; /* Чтобы padding не раздувал ширину */
     outline: none;
 }
+.hr {
+    margin: 20px 0;
+    border: 0;
+    border-top: 1px solid #444;
+}
 
 .auth-form input:focus {
     border-color: #007bff;
+}
+
+.sent-conf {
+    color: #17a2b8;
+    font-size: 0.8em;
+    margin-top: 5px;
 }
 
 .btn-auth {

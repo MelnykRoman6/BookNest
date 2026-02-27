@@ -15,19 +15,6 @@ if (!isset($pdo)) {
 </head>
 <body>
 
-<div id="progress-container">
-    <div class="progress-bar-bg">
-        <div id="pb-fill" class="progress-bar-fill"></div>
-    </div>
-    <div id="pb-text" class="progress-text">0%</div>
-    <p style="color: #888; margin-top: 10px;">Salvataggio dei dati in corso...</p>
-</div>
-
-<div id="loader-overlay">
-    <div class="spinner"></div>
-    <div class="loader-text">Downloading...</div>
-    <p style="color: #888; font-size: 0.9em;">Please wait, we are downloading the author and cover data</p>
-</div>
 <div class="user-menu">
 
     <?php if (isset($_SESSION['user_id'])): ?>

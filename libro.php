@@ -38,10 +38,15 @@ $iaId = $_GET['ia'] ?? null;
 if (!$bookId) die("Book ID missing");
 
 $apiUrl = "https://openlibrary.org/works/{$bookId}.json";
+//crea una risorsa per URL
 $ch = curl_init();
+//imposta l’URL da chiamare
 curl_setopt($ch, CURLOPT_URL, $apiUrl);
+//restituisce la risposta come stringa invece di stamparla
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//imposta lo User-Agent (chi sta facendo la richiesta)
 curl_setopt($ch, CURLOPT_USERAGENT, 'BookNestApp/1.0');
+//esegue la richiesta
 $response = curl_exec($ch);
 $book = json_decode($response, true);
 curl_close($ch);

@@ -7,8 +7,6 @@ if (!isset($pdo)) {
 }
 
 $user_id = $_SESSION['user_id'];
-$success = "";
-$error = "";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id_col = trim($_POST['id_collezione'] ?? '');

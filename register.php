@@ -23,18 +23,18 @@ if (isset($_POST['send_code'])) {
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com';
-        $mail->SMTPAuth   = true;
-        $mail->Username   = 'melnykromandev@gmail.com';
-        $mail->Password   = 'qwnrxlyrkqqgiwqh';
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'melnykromandev@gmail.com';
+        $mail->Password = 'qwnrxlyrkqqgiwqh';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = 587;
+        $mail->Port = 587;
 
         $mail->setFrom('melnykromandev@gmail.com', 'BookNest');
         $mail->addAddress($email);
         $mail->isHTML(true);
         $mail->Subject = 'Your BookNest verification code';
-        $mail->Body    = "Your verification code is: <b>$code</b>";
+        $mail->Body = "Your verification code is: <b>$code</b>";
 
         $mail->send();
         $msg = "Code sent to $email";

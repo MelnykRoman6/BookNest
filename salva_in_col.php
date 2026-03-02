@@ -11,9 +11,9 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $db_book_id    = $_POST['db_book_id'] ?? null;
+    $db_book_id = $_POST['db_book_id'] ?? null;
     $collection_id = $_POST['collection_id'] ?? null;
-    $ol_id         = $_POST['book_id'] ?? '';
+    $ol_id = $_POST['book_id'] ?? '';
 
     $stmtCol = $pdo->prepare("SELECT ia_id FROM libro WHERE open_library_id = ?");
     $stmtCol->execute([$ol_id]);

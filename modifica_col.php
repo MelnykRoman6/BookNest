@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
 
 <div class="box">
-    <a href="profilo.php">← Back to profile</a>
+    <a href="profilo.php" class="back-link">← Back to profile</a>
     <h2>Change name</h2>
 
     <?php if ($error): ?>

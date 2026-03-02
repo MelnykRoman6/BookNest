@@ -205,6 +205,7 @@ if ($titolo !== '') {
 
             foreach ($data['docs'] as $book) {
                 $bookKey = str_replace('/works/', '', $book['key']);
+                //se il libro è nel db, passa al prossimo libro
                 if (in_array($bookKey, $idsPresenti)) continue;
 
                 $titleApi = $book['title'] ?? 'No title';

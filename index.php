@@ -195,7 +195,7 @@ if (!empty($libri_db)) {
 // se non trova usa API
 if ($titolo !== '') {
     echo "<h3>Results from OpenLibrary</h3>";
-    $url = "https://openlibrary.org/search.json?q=" . urlencode($titolo) . "&limit=10";
+    $url = "https://openlibrary.org/search.json?q=" . urlencode($titolo) . "&limit=30";
     $response = @file_get_contents($url);
 
     if ($response) {

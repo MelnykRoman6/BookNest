@@ -303,7 +303,16 @@ if ($recensioni):
     foreach ($recensioni as $rec):
         ?>
         <div class="review-card">
-            <strong><?= htmlspecialchars($rec['email']) ?></strong>
+            <strong>
+                <?php
+                $email = $rec['email'];
+                $parts = explode("@", $email);
+                $username = $parts[0];
+                $domain = $parts[1];
+                $maskedUsername = substr($username, 0, 1) . str_repeat('*', strlen($username) - 1);
+                echo htmlspecialchars($maskedUsername . "@" . $domain);
+                ?>
+            </strong>
             — <?= str_repeat("⭐", $rec['rating']) ?>
             <br>
             <?= nl2br(htmlspecialchars($rec['commento'])) ?>

@@ -16,4 +16,10 @@
 ## Schema entità-relazionale
 <img width="851" height="775" alt="BookNest drawio" src="https://github.com/user-attachments/assets/d7df1689-400f-436d-974d-0851a957441f" />
 
+### Installazione e Avvio (in locale)
+
++ **Xampp**: Scaricare e avviare Apache e MySQL, mettere la cartella del progetto su ./xampp/htdocs
++ **La Database**: [booknest.sql](https://github.com/user-attachments/files/25708341/booknest.sql)
++ **Sito**: Entrare tramite localhost/*nome del progetto* su qualsiasi browser
+
 

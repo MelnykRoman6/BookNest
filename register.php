@@ -5,9 +5,7 @@ if (!isset($pdo)) {
     die("Errore: la variabile \$pdo non è definita in db.php");
 }
 
-require 'includes/PHPMailer/Exception.php';
-require 'includes/PHPMailer/PHPMailer.php';
-require 'includes/PHPMailer/SMTP.php';
+require 'vendor/autoload.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;

@@ -20,6 +20,10 @@
 
 + **Xampp**: Scaricare e avviare Apache e MySQL, mettere la cartella del progetto su ./xampp/htdocs
 + **La Database**: [booknest.sql](https://github.com/user-attachments/files/25708341/booknest.sql)
++ **Importare la DB**: <img width="1920" height="1080" alt="Screenshot 2026-03-03 091812" src="https://github.com/user-attachments/assets/9acb07ab-7274-4ea6-a69f-412788532910" />
+<img width="1919" height="1079" alt="Screenshot 2026-03-03 091827" src="https://github.com/user-attachments/assets/abe9a94b-075b-4d43-a2fc-2c49352cf8ab" />
+
+
 + **Sito**: Entrare tramite localhost/*nome del progetto* su qualsiasi browser
 
 

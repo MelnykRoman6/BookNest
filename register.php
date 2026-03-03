@@ -46,42 +46,46 @@ if (isset($_POST['register'])) {
     $password = $_POST['password'];
 
     if ($input_code == $_SESSION['temp_code']) {
-        $password_hash = password_hash($password, PASSWORD_DEFAULT);
-        $email = $_SESSION['temp_email'];
+        if (!preg_match('/^[a-zA-Z0-9]+$/', $password)) {
+            $error = "Attention! The password may contain only numbers and letters. Remove special characters (like * /  _ -)";
+        } else {
+            $password_hash = password_hash($password, PASSWORD_DEFAULT);
+            $email = $_SESSION['temp_email'];
 
-        try {
-            $pdo->beginTransaction();
+            try {
+                $pdo->beginTransaction();
 
-            $sqlUser = "INSERT INTO utente (email, password_hash, is_verified, data_reg) VALUES (?, ?, 1, NOW())";
-            $stmtUser = $pdo->prepare($sqlUser);
-            $stmtUser->execute([$email, $password_hash]);
+                $sqlUser = "INSERT INTO utente (email, password_hash, is_verified, data_reg) VALUES (?, ?, 1, NOW())";
+                $stmtUser = $pdo->prepare($sqlUser);
+                $stmtUser->execute([$email, $password_hash]);
 
-            $new_user_id = $pdo->lastInsertId();
+                $new_user_id = $pdo->lastInsertId();
 
-            $base_collections = [
-                    'Reading',
-                    'Finished',
-                    'I want to read',
-                    'Favorites'
-            ];
-            //creazione delle collezioni
-            $sqlCol = "INSERT INTO collezione (id_utente, nome, data_crea) VALUES (?, ?, NOW())";
-            $stmtCol = $pdo->prepare($sqlCol);
+                $base_collections = [
+                        'Reading',
+                        'Finished',
+                        'I want to read',
+                        'Favorites'
+                ];
+                //creazione delle collezioni
+                $sqlCol = "INSERT INTO collezione (id_utente, nome, data_crea) VALUES (?, ?, NOW())";
+                $stmtCol = $pdo->prepare($sqlCol);
 
-            foreach ($base_collections as $col_name) {
-                $stmtCol->execute([$new_user_id, $col_name]);
+                foreach ($base_collections as $col_name) {
+                    $stmtCol->execute([$new_user_id, $col_name]);
+                }
+
+                $pdo->commit();
+
+                unset($_SESSION['temp_code']);
+                unset($_SESSION['temp_email']);
+                header("Location: login.php?success=1");
+                exit;
+
+            } catch (PDOException $e) {
+                $pdo->rollBack();
+                $error = "Error during registration: " . $e->getMessage();
             }
-
-            $pdo->commit();
-
-            unset($_SESSION['temp_code']);
-            unset($_SESSION['temp_email']);
-            header("Location: login.php?success=1");
-            exit;
-
-        } catch (PDOException $e) {
-            $pdo->rollBack();
-            $error = "Error during registration: " . $e->getMessage();
         }
     } else {
         $error = "Incorrect code!";

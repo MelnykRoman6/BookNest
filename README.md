@@ -1,4 +1,4 @@
-# BookNest
+[booknest.sql](https://github.com/user-attachments/files/25708341/booknest.sql)# BookNest
 ## Descrizione del Progetto
 è una piattaforma web progettata per offrire la possibilità di leggere libri online oppure scaricarli. Il sito permette agli utenti non solo di leggere i propri titoli preferiti, ma anche di organizzare la propria libreria digitale in modo personalizzato.
 # Caratteristiche Principali
@@ -15,5 +15,11 @@
 
 ## Schema entità-relazionale
 <img width="851" height="775" alt="BookNest drawio" src="https://github.com/user-attachments/assets/d7df1689-400f-436d-974d-0851a957441f" />
+
+### Installazione e Avvio (in locale)
+
++ **Xampp**: Scaricare e avviare Apache e MySQL, mettere la cartella del progetto su ./xampp/htdocs
++ **La Database**: [Scaricare la db (.sql)](./db.sql)
++ **Sito**: Entrare tramite localhost/*nome del progetto* su qualsiasi browser
 
 
